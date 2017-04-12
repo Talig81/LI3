@@ -29,12 +29,20 @@ int main(int argc,char** argv){
     }
     xmlDocPtr doc;
     xmlNodePtr cur;
+    xmlNodePtr dad;
 
     doc = xmlParseFile(argv[1]);
     if(doc == NULL) return 0;
-    cur = xmlDocGetRootElement(doc);
-    cur = cur -> xmlChildrenNode;
- 	parsingTitleS(doc,cur);
+    dad = xmlDocGetRootElement(doc);
+    dad = dad -> xmlChildrenNode;
+    dad = dad -> next;
+  //  dad = dad -> next;
+  //  dad = dad -> next;
+    //cur = cur -> next;
+    //cur = cur -> next;
+    dad = xmlNextElementSibling(dad);
+    printf("%s\n",dad->name );
+ //	parsingTitleS(doc,dad);
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return 0;
