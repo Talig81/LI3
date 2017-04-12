@@ -6,15 +6,14 @@
 #include <libxml/xmlmemory.h>
 
 
-void parsingTitleS(xmlDocPtr doc, xmlNodePtr cur){
+void allArticles(xmlDocPtr doc, xmlNodePtr cur,int contador){
     cur = cur -> xmlChildrenNode;
     xmlChar* cena;
 	while(cur != NULL){
-        if((!xmlStrcmp(cur->name,(const xmlChar*)"title"))){
+        if((!xmlStrcmp(cur->name,(const xmlChar*)"id"))){
+        	contador++;
             cena = xmlNodeListGetString(doc, cur-> xmlChildrenNode,1);
-            printf("OI %s",cena);
             xmlFree(cena);
-            break;
         	}
         else cur = cur->next;
     }
@@ -23,6 +22,7 @@ void parsingTitleS(xmlDocPtr doc, xmlNodePtr cur){
 
 
 int main(int argc,char** argv){
+	int contador = 0;
 	if(argc != 2){
 		 printf("falta argumentos\n");
 		 return 0;
@@ -41,9 +41,8 @@ int main(int argc,char** argv){
     //cur = cur -> next;
     //cur = cur -> next;
     dad = xmlNextElementSibling(dad);
-    printf("%s\n",dad->name );
- //	parsingTitleS(doc,dad);
+ 	allArticles(doc,dad,contador);
     xmlFreeDoc(doc);
     xmlCleanupParser();
-    return 0;
+    return contador;
 }
