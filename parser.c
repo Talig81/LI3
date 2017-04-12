@@ -5,27 +5,35 @@
 #include <libxml/tree.h>
 
 
+void parsingTitleS(xmlDocPtr doc, xmlNodePtr cur, xmlChar* cena){
+	while(cur != NULL){
+        if((!xmlStrcmp(cur->name,(const xmlChar*)"title"))){
+            cena = xmlNodeListGetString(doc, cur-> xmlChildrenNode,1);
+            printf("%s",cena);
+            break;
+        	}
+        else cur = cur->next;
+    }
+}
+
+
 int main(int argc,char** argv){
-	if(argc != 3){ 
+	if(argc != 2){ 
 		 printf("falta argumentos\n");
 		 return 0; 
     }
     xmlDocPtr doc;
     xmlNodePtr cur;
-    
+    FILE *f;
+    f = fopen(argv[2],"w");
 
     doc = xmlParseFile(argv[1]);
     if(doc == NULL) return 0;
     cur = xmlDocGetRootElement(doc);
+    cur = cur -> xmlChildrenNode;
     xmlChar* test;
-    while(cur != NULL){
-        if((!xmlStrCmp(cur->name,(const xmlChar*)"title"))){
-            test = xmlNodeListGetString(doc, cur-> xmlChildrenNode,1);
-            break;}
-        else cur = cur->next;
-    }
-    fprintf(argv[2],"%s",test);
-    xmlFree(test);
+ 	parsingTitleS(doc,cur,test);
+ 	xmlFree(test);
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return 0;
