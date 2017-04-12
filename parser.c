@@ -8,15 +8,19 @@
 
 int allArticles(xmlDocPtr doc, xmlNodePtr cur){
 	int contador = 0;
+	xmlChar* chr;
 	xmlNodePtr parente = cur;
 	xmlNodePtr child = parente->xmlChildrenNode;
     while(parente != NULL){
     	child = parente -> xmlChildrenNode;
 		while(child != NULL){
+			//printf("Tou num ciclo e : %s ,contador %d: \n", child->name, contador);
         	if((!xmlStrcmp(child->name,(const xmlChar*)"id"))){
+        		chr = xmlNodeListGetString(doc,child->xmlChildrenNode,1);
+        		printf("Artigo ID: %s, artigo numero : , %d \n",chr,  contador);
         		contador++;
         		}
-        	else child = xmlNextElementSibling(child);
+        	child = xmlNextElementSibling(child);
     	}
     	parente = xmlNextElementSibling(parente);
     }  
@@ -40,7 +44,7 @@ int main(int argc,char** argv){
     cur = dad -> xmlChildrenNode;
     cur = xmlNextElementSibling(cur);
     cur = xmlNextElementSibling(cur);
-    printf("o cur é: %s\n",cur->name);
+    printf("o cur é: %s\n",cur->parent->name);
  	contador = allArticles(doc,cur);
     xmlFreeDoc(doc);
     xmlCleanupParser();
