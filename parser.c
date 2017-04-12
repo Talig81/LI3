@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include <stdio.h>1
 #include <string.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -19,6 +19,7 @@ int allArticles(xmlDocPtr doc, xmlNodePtr cur){
         		chr = xmlNodeListGetString(doc,child->xmlChildrenNode,1);
         		printf("Artigo ID: %s, artigo numero : , %d \n",chr,  contador);
         		contador++;
+        		xmlFree(chr);
         		}
         	child = xmlNextElementSibling(child);
     	}
@@ -27,6 +28,7 @@ int allArticles(xmlDocPtr doc, xmlNodePtr cur){
     printf("contador %d\n",contador);
     return contador;
     }
+
 
 
 int main(int argc,char** argv){
