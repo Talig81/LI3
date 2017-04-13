@@ -1,11 +1,10 @@
 #include <stdlib.h>
-#include <stdio.h>1
+#include <stdio.h>
 #include <string.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlmemory.h>
-#include <avl.h>
-
+#include "avl.h"
 
 int allArticles(xmlDocPtr doc, xmlNodePtr cur){
 	int contador = 0;
@@ -30,13 +29,55 @@ int allArticles(xmlDocPtr doc, xmlNodePtr cur){
     return contador;
     }
 
+int unique(xmlDocPtr doc,xmlNodePtr cur, node* t){
+    int contador = 0;
+    int numr = 0;
+    int flagie = 0;
+    int b = 0;
+	xmlChar* title;
+    xmlChar* ids;
+	xmlNodePtr parente = cur;
+	xmlNodePtr child = parente->xmlChildrenNode;
+    while(parente != NULL){
+    	child = parente -> xmlChildrenNode;
+		while(child != NULL){
+        	if((!xmlStrcmp(child->name,(const xmlChar*)"title"))){
+        		title = xmlNodeListGetString(doc,child->xmlChildrenNode,1);
+                flagie += 1;
 
+        	}
+            if((!xmlStrcmp(child->name,(const xmlChar*)"id"))){
+                ids = xmlNodeListGetString(doc,child->xmlChildrenNode,1);
+                numr = atoi(ids);
+                flagie += 1;
+            }
+            if(flagie == 2 && numr != 0){
+                insert(numr,t,&contador,title);
+                display_avl(t);
+                printf("b:%d\n",b);
+                b++;
+                display_avl(t);
+                xmlFree(title);
+                xmlFree(ids);
+                numr=0;
+                flagie=0;
+            }
+        	child = xmlNextElementSibling(child);
+    	}
+    	parente = xmlNextElementSibling(parente);
+    }
+    printf("cheguei aqui,%d\n",contador);
+    return contador;
+}  
 
 int main(int argc,char** argv){
+    node* t = NULL;
 	if(argc != 2){
 		 printf("falta argumentos\n");
 		 return 0;
     }
+    int sa = 10;
+    char* s = "teste";
     xmlDocPtr doc;
     xmlNodePtr cur;
     xmlNodePtr dad;
@@ -47,9 +88,12 @@ int main(int argc,char** argv){
     cur = dad -> xmlChildrenNode;
     cur = xmlNextElementSibling(cur);
     cur = xmlNextElementSibling(cur);
-    printf("o cur é: %s\n",cur->parent->name);
- 	contador = allArticles(doc,cur);
+ 	//contador = allArticles(doc,cur);
+   // contador = unique(doc,cur,t);
+    insert(sa,t,&contador,s);
+    display_avl(t);
     xmlFreeDoc(doc);
     xmlCleanupParser();
+    dispose(t);
     return contador;
 }
