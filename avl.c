@@ -9,9 +9,12 @@ void dispose(node* t)
     {
         dispose( t->left );
         dispose( t->right );
+        free(t->content);
         free( t );
     }
 }
+
+
 
 /*
     find a specific node's key in the tree
@@ -150,12 +153,14 @@ static node* double_rotate_with_right( node* k1 )
 /*
     insert a new node into the tree
 */
-node* insert(int e, node* t )
+node* insert(int e, node* t,int& conta,char* string )
 {
+conta++;
     if( t == NULL )
     {
         /* Create and return a one-node tree */
         t = (node*)malloc(sizeof(node));
+        t->content = (char*)malloc(sizeof(char)*1024);
         if( t == NULL )
         {
             fprintf (stderr, "Out of memory!!! (insert)\n");
@@ -165,6 +170,7 @@ node* insert(int e, node* t )
         {
             t->data = e;
             t->height = 0;
+            t->content = string;
             t->left = t->right = NULL;
         }
     }
@@ -186,8 +192,11 @@ node* insert(int e, node* t )
             else
                 t = double_rotate_with_right( t );
     }
-    /* Else X is in the tree already; we'll do nothing */
+else (e == t->data )
+conta--;
 
+    /* Else X is in the tree already; we'll do nothing */
+    t->content = string;
     t->height = max( height( t->left ), height( t->right ) ) + 1;
     return t;
 }
@@ -208,6 +217,8 @@ int get(node* n)
 {
     return n->data;
 }
+
+
 
 /*
     Recursively display AVL tree or subtree

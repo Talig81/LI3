@@ -4,6 +4,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlmemory.h>
+#include <avl.h>
 
 
 int allArticles(xmlDocPtr doc, xmlNodePtr cur){
