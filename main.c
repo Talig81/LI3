@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "avl.h"
+#include <string.h>
 
 int main()
 {
@@ -11,16 +13,21 @@ int main()
     printf("--- C AVL Tree Demo  ---\n");
 
     t = NULL;
+    int conta = 0;
+    char * cenas = "ccenas";
+    char * oi = (char * )malloc(sizeof(char)*strlen(cenas)+1);
+    strcpy( oi, cenas);
+
 
     printf("Insert: ");
     for( i = 0; i < max; i++, j = ( j + 7 ) % max )
     {
 
-        t = insert( j, t );
+        t = insert( j, t, &conta, oi);
         printf("%d ",j);
 
     }
-    printf(" into the tree\n\n");
+    printf(" intoergerg the tree\n\n");
 
     display_avl(t);
 

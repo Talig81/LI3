@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "avl.h"
+#include <string.h>
 /*
     remove all nodes of an AVL tree
 */
@@ -7,10 +9,15 @@ void dispose(node* t)
 {
     if( t != NULL )
     {
+
+
         dispose( t->left );
         dispose( t->right );
-        free(t->content);
+          printf("Vou apagar : %s\n", t->content );
+//  free(t->content);
         free( t );
+
+
     }
 }
 
@@ -153,14 +160,16 @@ static node* double_rotate_with_right( node* k1 )
 /*
     insert a new node into the tree
 */
-node* insert(int e, node* t,int& conta,char* string )
+node* insert(int e, node* t,int * conta,char* string )
 {
-conta++;
+*conta++;
+
     if( t == NULL )
     {
         /* Create and return a one-node tree */
         t = (node*)malloc(sizeof(node));
-        t->content = (char*)malloc(sizeof(char)*1024);
+      //  t->content = NULL;
+
         if( t == NULL )
         {
             fprintf (stderr, "Out of memory!!! (insert)\n");
@@ -170,13 +179,15 @@ conta++;
         {
             t->data = e;
             t->height = 0;
-            t->content = string;
+            t->content = (char*)malloc(sizeof(char)*strlen(string)+1);
+            strcpy( t->content, string );
+
             t->left = t->right = NULL;
         }
     }
     else if( e < t->data )
     {
-        t->left = insert( e, t->left );
+        t->left = insert( e, t->left, conta, string );
         if( height( t->left ) - height( t->right ) == 2 )
             if( e < t->left->data )
                 t = single_rotate_with_left( t );
@@ -185,15 +196,15 @@ conta++;
     }
     else if( e > t->data )
     {
-        t->right = insert( e, t->right );
+        t->right = insert( e, t->right, conta, string ) ;
         if( height( t->right ) - height( t->left ) == 2 )
             if( e > t->right->data )
                 t = single_rotate_with_right( t );
             else
                 t = double_rotate_with_right( t );
     }
-else (e == t->data )
-conta--;
+else if(e == t->data )
+  (*conta)--;
 
     /* Else X is in the tree already; we'll do nothing */
     t->content = string;
