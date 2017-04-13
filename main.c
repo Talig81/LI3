@@ -13,7 +13,6 @@ int main()
     printf("--- C AVL Tree Demo  ---\n");
 
     t = NULL;
-    int conta = 0;
     char * cenas = "ccenas";
     char * oi = (char * )malloc(sizeof(char)*strlen(cenas)+1);
     strcpy( oi, cenas);
@@ -23,14 +22,11 @@ int main()
     for( i = 0; i < max; i++, j = ( j + 7 ) % max )
     {
 
-        t = insert( j, t, &conta, oi);
-        printf("%d ",j);
-
+        t = insert( j, t, oi);
     }
-    printf(" intoergerg the tree\n\n");
-
-    display_avl(t);
-
+    int n = 0;
+    n = (int) countNodes(t);
+    printf("numero: %d\n",n);
     dispose(t);
 
     return 0;

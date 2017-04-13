@@ -13,14 +13,12 @@ void dispose(node* t)
 
         dispose( t->left );
         dispose( t->right );
-          printf("Vou apagar : %s\n", t->content );
 //  free(t->content);
         free( t );
 
 
     }
 }
-
 
 
 /*
@@ -37,6 +35,8 @@ node* find(int e, node* t )
     else
         return t;
 }
+
+
 
 /*
     find minimum node's key
@@ -160,9 +160,8 @@ static node* double_rotate_with_right( node* k1 )
 /*
     insert a new node into the tree
 */
-node* insert(int e, node* t,int * conta,char* string )
+node* insert(int e, node* t,char* string )
 {
-*conta++;
 
     if( t == NULL )
     {
@@ -187,7 +186,7 @@ node* insert(int e, node* t,int * conta,char* string )
     }
     else if( e < t->data )
     {
-        t->left = insert( e, t->left, conta, string );
+        t->left = insert( e, t->left,string );
         if( height( t->left ) - height( t->right ) == 2 )
             if( e < t->left->data )
                 t = single_rotate_with_left( t );
@@ -196,25 +195,30 @@ node* insert(int e, node* t,int * conta,char* string )
     }
     else if( e > t->data )
     {
-        t->right = insert( e, t->right, conta, string ) ;
+        t->right = insert( e, t->right, string ) ;
         if( height( t->right ) - height( t->left ) == 2 )
             if( e > t->right->data )
                 t = single_rotate_with_right( t );
             else
                 t = double_rotate_with_right( t );
     }
-else if(e == t->data )
-  (*conta)--;
-
     /* Else X is in the tree already; we'll do nothing */
-    t->content = string;
     t->height = max( height( t->left ), height( t->right ) ) + 1;
     return t;
 }
 
-/*
-    remove a node in the tree
-*/
+int countNodes(node* t){
+    int c = 1;
+    if(t==NULL)
+        return 0;
+    else{
+        c += countNodes(t->left);
+        c += countNodes(t->right);
+        return c;
+    }
+}
+
+
 node* delete( int e, node* t )
 {
     printf( "Sorry; Delete is unimplemented; %d remains\n", e );
@@ -234,18 +238,14 @@ int get(node* n)
 /*
     Recursively display AVL tree or subtree
 */
+
 void display_avl(node* t)
 {
     if (t == NULL)
         return;
-    printf("%d",t->data);
-
-    if(t->left != NULL)
-        printf("(L:%d)",t->left->data);
-    if(t->right != NULL)
-        printf("(R:%d)",t->right->data);
-    printf("\n");
-
+    printf("%d\n",t->data);
     display_avl(t->left);
     display_avl(t->right);
 }
+
+

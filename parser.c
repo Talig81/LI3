@@ -17,7 +17,6 @@ int allArticles(xmlDocPtr doc, xmlNodePtr cur){
 			//printf("Tou num ciclo e : %s ,contador %d: \n", child->name, contador);
         	if((!xmlStrcmp(child->name,(const xmlChar*)"id"))){
         		chr = xmlNodeListGetString(doc,child->xmlChildrenNode,1);
-        		printf("Artigo ID: %s, artigo numero : , %d \n",chr,  contador);
         		contador++;
         		xmlFree(chr);
         		}
@@ -30,10 +29,8 @@ int allArticles(xmlDocPtr doc, xmlNodePtr cur){
     }
 
 int unique(xmlDocPtr doc,xmlNodePtr cur, node* t){
-    int contador = 0;
     int numr = 0;
     int flagie = 0;
-    int b = 0;
 	xmlChar* title;
     xmlChar* ids;
 	xmlNodePtr parente = cur;
@@ -52,11 +49,7 @@ int unique(xmlDocPtr doc,xmlNodePtr cur, node* t){
                 flagie += 1;
             }
             if(flagie == 2 && numr != 0){
-                insert(numr,t,&contador,title);
-                display_avl(t);
-                printf("b:%d\n",b);
-                b++;
-                display_avl(t);
+                t = insert(numr,t,title);
                 xmlFree(title);
                 xmlFree(ids);
                 numr=0;
@@ -66,8 +59,7 @@ int unique(xmlDocPtr doc,xmlNodePtr cur, node* t){
     	}
     	parente = xmlNextElementSibling(parente);
     }
-    printf("cheguei aqui,%d\n",contador);
-    return contador;
+    return countNodes(t);
 }  
 
 int main(int argc,char** argv){
@@ -81,7 +73,8 @@ int main(int argc,char** argv){
     xmlDocPtr doc;
     xmlNodePtr cur;
     xmlNodePtr dad;
-    int contador = 0;
+    int todos = 0;
+    int unicos = 0;
     doc = xmlParseFile(argv[1]);
     if(doc == NULL) return 0;
     dad = xmlDocGetRootElement(doc);
@@ -89,11 +82,11 @@ int main(int argc,char** argv){
     cur = xmlNextElementSibling(cur);
     cur = xmlNextElementSibling(cur);
  	//contador = allArticles(doc,cur);
-   // contador = unique(doc,cur,t);
-    insert(sa,t,&contador,s);
-    display_avl(t);
+    unicos = unique(doc,cur,t);
+    todos = allArticles(doc,cur);
+    printf("todos: %d\n unicos: %d\n",todos,unicos);
     xmlFreeDoc(doc);
     xmlCleanupParser();
     dispose(t);
-    return contador;
+    return 0;
 }
