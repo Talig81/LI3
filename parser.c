@@ -4,7 +4,8 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlmemory.h>
-#include "avl.h"
+#include "avl.h"7
+#include "linklist.h"
 
 int allArticles(xmlDocPtr doc, xmlNodePtr cur){
 	int contador = 0;
@@ -24,7 +25,6 @@ int allArticles(xmlDocPtr doc, xmlNodePtr cur){
     	}
     	parente = xmlNextElementSibling(parente);
     }  
-    printf("contador %d\n",contador);
     return contador;
     }
 
@@ -60,7 +60,39 @@ int unique(xmlDocPtr doc,xmlNodePtr cur, node* t){
     	parente = xmlNextElementSibling(parente);
     }
     return countNodes(t);
-}  
+} 
+
+
+/*llink* retornaContrs(xmlDocPtr doc,xmlNodePtr cur,llink* l){
+    int numr = 0;
+    int flagie = 0;
+    xmlChar* title;
+    xmlChar* ids;
+    xmlNodePtr parente = cur;
+    xmlNodePtr child = parente->xmlChildrenNode;
+    xmlNodePtr revision;
+    xmlNodePtr contribution;
+    while(parente != NULL){
+        child = parente -> xmlChildrenNode;
+        while(child != NULL){
+            if((!xmlStrcmp(child->name,(const xmlChar*)"revision"))){
+                revision = child -> xmlChildrenNode;
+                while(revision!=NULL){
+                    if((!xmlStrcmp(revision->name,(const xmlChar*)"")))
+                }
+            if(flagie == 2 && numr != 0){
+                t = insert(numr,t,title);
+                xmlFree(title);
+                xmlFree(ids);
+                numr=0;
+                flagie=0;
+            }
+            child = xmlNextElementSibling(child);
+        }
+        parente = xmlNextElementSibling(parente);
+    }
+    return countNodes(t);
+} */
 
 int main(int argc,char** argv){
     node* t = NULL;
