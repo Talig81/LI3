@@ -16,6 +16,6 @@ node *find_max(node *t);
 node *insert(int e, node* t,char* string );
 node *delete (int data, node *t);
 int countNodes(node* t);
-void display_avl(node *t);
+node* display_avl(node *t);
 int get(node *n);
 #endif // AVLTREE_H_INCLUDED

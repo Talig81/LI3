@@ -1,0 +1,34 @@
+TODO:
+
+MINOR
+- resolver o problema dos apontadores(os apontadores funcionam bem dentro da funçao unique mas depois de serem chamados da main os apontadores continuam a apontar para null. resolver com o 4)
+- Fazer com que a lista ligada tenha um apontador para o ultimo lugar para ser mais facil adicionar caso nao tenha aparecido. Se o prof aceitar esta lista ligada vai ser melhor que uma HEAP :DDD
+- Alterar AVL para as revisões
+
+MAJOR
+-Começar ja a interface.c que pega no parser e nas estruturas todas e faz uma estrutura geral TAD_ISTRUCT
+-Arranjar maneira de fazer a contagem de palavras e bytes sem precisar de nova estrutura
+-Perguntar ao prof se posso usar as listas ligadas sem reprovar
+
+
+QUERIES ()
+
+1- Easy, nem precisa de estrutura
+
+2- Easy com AVL
+
+3- Easy se a AVL for bem mudada
+
+4- Se o prof aceitar a lista ligada EASY
+
+5- Se o prof aceitar a lista ligada EASY
+
+6- Fodeu
+
+7- Easy com AVL
+
+8- Fodeu
+
+9- Fodeu
+
+10- Depende da 3

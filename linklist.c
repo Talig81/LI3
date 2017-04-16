@@ -33,7 +33,7 @@ llink* cria(int ids, char* string){
 	llink* l = (llink*) malloc(sizeof(llink));
 	l -> id = ids;
 	l -> author = (char*)malloc(sizeof(char)*strlen(string)+1);
-	strcpy(l->author, string);
+	if(string != NULL) strcpy(l->author, string);
 	l -> times = 1;
 	l -> next = NULL;
 	return l;
@@ -49,6 +49,14 @@ llink* lasti(llink* l){
 		l = l -> next;
 	}
 	return l;
+}
+
+llink* firstAlt(llink* l, int ids,char*string){
+	l -> id = ids;
+	l->author = string;
+	l -> times = 1;
+	return l;
+
 }
 
 llink* insertUno(llink* l, int ids,char* string){
@@ -99,28 +107,39 @@ llink* ordenador(llink* l,llink* f){
 		}
 
 void printas(llink* l){
-		while(l!=NULL){
+		int n = 0;
+		while(l!=NULL && n < 10){
 			printf("Id: %d(%d)\n",l->id,l->times);
 			l = l->next;
+			n++;
 		}
 	}
-
-
-int main(int argc,char** argv){
+llink* fazcenas(llink* l, char* string){
 	int n = 6;
-	llink* l = cria(10,"fuck");
-	l -> next = cria(11,"fuck");
-	l -> next -> next = cria(12,"fucki");
+	while(n < 12){
+		l = insertUno(l,n,string);
+		n++;
+	}
+	while(n>6){
+		l = insertUno(l,n,string);
+		n--;
+	}
+	l=insertUno(l,n,string);
+	l = insertUno(l,n,string);
+	if( l == NULL)
+		printf("fazcenasLOL\n");
 
-		l = insertUno(l,10,"stringas");
-		l = insertUno(l,11,"stringas");
-		l = insertUno(l,11,"stringas");
-		l = insertUno(l,10,"stringas");
-		l = insertUno(l,12,"stringas");
-		l = insertUno(l,3,"stringas");
+	return l;
+}
+/*
+int main(int argc,char** argv){
+	llink* l = NULL;
+	char* s = "string";
+	l = fazcenas(l,s);
 	
-	
-
+	//printf("%d\n",l->id);
+	if( l == NULL)
+		printf("MAIN NULL\n");
 	printas(l);
 	return 1;
-}
+}*/

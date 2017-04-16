@@ -238,14 +238,22 @@ int get(node* n)
 /*
     Recursively display AVL tree or subtree
 */
-
-void display_avl(node* t)
-{
-    if (t == NULL)
-        return;
-    printf("%d\n",t->data);
-    display_avl(t->left);
-    display_avl(t->right);
+/*
+int main(int argc, char** argv){
+    node* od = NULL;
+    int n = 5;
+    char* s = "stringas";
+    while(n < 14){
+        insert(n,od,s);
+        n++;
+    }
+    n= 0;
+    while(n <5){
+        insert(n,od,s);
+        n++;
+    }
+    printf("nodo: %d\n",od->data);
+    printf("nodo: %d\n",od->left->data);
+    return 81;
 }
-
-
+*/

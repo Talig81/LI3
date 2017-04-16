@@ -15,6 +15,9 @@ llink* encontra(int ids, llink* l);
 llink* ordenador(llink* l,llink* f);
 llink* cria(int ids, char* string);
 llink* lasti(llink* l);
+llink* insertUno(llink* l,int ids, char* string);
 int encontraPrimeiro(int ids,llink* l);
+void printas(llink* l);
+llink* firstAlt(llink* l, int ids, char*string);
 
 #endif 

@@ -4,7 +4,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlmemory.h>
-#include "avl.h"7
+#include "avl.h"
 #include "linklist.h"
 
 int allArticles(xmlDocPtr doc, xmlNodePtr cur){
@@ -28,74 +28,78 @@ int allArticles(xmlDocPtr doc, xmlNodePtr cur){
     return contador;
     }
 
-int unique(xmlDocPtr doc,xmlNodePtr cur, node* t){
+
+node* unique(xmlDocPtr doc,xmlNodePtr cur, node* t,llink**bl){
     int numr = 0;
-    int flagie = 0;
+    int contas=0;
+    int atois;
+    llink* l = *bl;
 	xmlChar* title;
     xmlChar* ids;
+    xmlChar* contrids;
+    xmlChar* contribuidor;
 	xmlNodePtr parente = cur;
 	xmlNodePtr child = parente->xmlChildrenNode;
+    xmlNodePtr revision;
+    xmlNodePtr contrs;
+    printf("%d\n",l->times);
     while(parente != NULL){
     	child = parente -> xmlChildrenNode;
 		while(child != NULL){
         	if((!xmlStrcmp(child->name,(const xmlChar*)"title"))){
         		title = xmlNodeListGetString(doc,child->xmlChildrenNode,1);
-                flagie += 1;
-
         	}
             if((!xmlStrcmp(child->name,(const xmlChar*)"id"))){
                 ids = xmlNodeListGetString(doc,child->xmlChildrenNode,1);
                 numr = atoi(ids);
-                flagie += 1;
             }
-            if(flagie == 2 && numr != 0){
+            if(numr != 0){
                 t = insert(numr,t,title);
-                xmlFree(title);
-                xmlFree(ids);
+                printf("Arvorezita: %d\n",t->data);
                 numr=0;
-                flagie=0;
+            }
+            if((!xmlStrcmp(child->name,(const xmlChar*)"revision"))){
+                revision = child->xmlChildrenNode;
+                    while(revision != NULL){
+                        if((!xmlStrcmp(revision->name,(const xmlChar*)"contributor"))){
+                            contrs = revision -> xmlChildrenNode;
+                                while(contrs!=NULL){
+                                    if((!xmlStrcmp(contrs->name,(const xmlChar*)"username"))){
+                                        contribuidor = xmlNodeListGetString(doc,contrs->xmlChildrenNode,1);
+                                    }
+                                    if((!xmlStrcmp(contrs->name,(const xmlChar*)"id"))){
+                                        contrids = xmlNodeListGetString(doc,contrs->xmlChildrenNode,1);
+                                      //  printf("contrids: %s\n",contrids);
+                                        if(contrids != NULL){
+                                            atois = atoi(contrids);
+                                            l = insertUno(l,atois,contribuidor);
+                                            printf("%d\n",l->id);
+                                        }
+                                    }
+                                    contrs = xmlNextElementSibling(contrs);
+                                }
+                        }
+                        revision = xmlNextElementSibling(revision);
+                    }
+
             }
         	child = xmlNextElementSibling(child);
     	}
     	parente = xmlNextElementSibling(parente);
     }
-    return countNodes(t);
+    if(t==NULL) printf("arvore vazia\n");
+    if(t!=NULL) printf("lista vazia\n");
+    xmlFree(title);
+    xmlFree(ids);
+    xmlFree(contrids);
+    xmlFree(contribuidor);
+    return t;
 } 
 
 
-/*llink* retornaContrs(xmlDocPtr doc,xmlNodePtr cur,llink* l){
-    int numr = 0;
-    int flagie = 0;
-    xmlChar* title;
-    xmlChar* ids;
-    xmlNodePtr parente = cur;
-    xmlNodePtr child = parente->xmlChildrenNode;
-    xmlNodePtr revision;
-    xmlNodePtr contribution;
-    while(parente != NULL){
-        child = parente -> xmlChildrenNode;
-        while(child != NULL){
-            if((!xmlStrcmp(child->name,(const xmlChar*)"revision"))){
-                revision = child -> xmlChildrenNode;
-                while(revision!=NULL){
-                    if((!xmlStrcmp(revision->name,(const xmlChar*)"")))
-                }
-            if(flagie == 2 && numr != 0){
-                t = insert(numr,t,title);
-                xmlFree(title);
-                xmlFree(ids);
-                numr=0;
-                flagie=0;
-            }
-            child = xmlNextElementSibling(child);
-        }
-        parente = xmlNextElementSibling(parente);
-    }
-    return countNodes(t);
-} */
-
 int main(int argc,char** argv){
     node* t = NULL;
+    llink* l = (llink*)malloc(sizeof(llink));
 	if(argc != 2){
 		 printf("falta argumentos\n");
 		 return 0;
@@ -114,11 +118,12 @@ int main(int argc,char** argv){
     cur = xmlNextElementSibling(cur);
     cur = xmlNextElementSibling(cur);
  	//contador = allArticles(doc,cur);
-    unicos = unique(doc,cur,t);
-    todos = allArticles(doc,cur);
-    printf("todos: %d\n unicos: %d\n",todos,unicos);
+    t = unique(doc,cur,t,&l);
+     if(t==NULL) printf("Continua a foder gui\n");
+     if(l==NULL) printf("quaaaaase que funcionava\n");
+   // todos = allArticles(doc,cur);
+   // printf("todos: %d\n unicos: %d\n",todos,unicos);
     xmlFreeDoc(doc);
     xmlCleanupParser();
-    dispose(t);
     return 0;
 }
