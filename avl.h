@@ -18,4 +18,5 @@ node *delete (int data, node *t);
 int countNodes(node* t);
 node* display_avl(node *t);
 int get(node *n);
+int counts(node* t);
 #endif // AVLTREE_H_INCLUDED

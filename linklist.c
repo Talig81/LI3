@@ -51,15 +51,22 @@ llink* lasti(llink* l){
 	return l;
 }
 
-llink* firstAlt(llink* l, int ids,char*string){
-	l -> id = ids;
-	l->author = string;
-	l -> times = 1;
-	return l;
 
+llink* primeiro(llink* l){
+    l = (llink*)malloc(sizeof(llink));
+    l -> id = -1;
+    l -> author = (char*)malloc(sizeof(char*)*52);
+    l -> times = 0;
+    return l;
 }
 
 llink* insertUno(llink* l, int ids,char* string){
+    if(l->id==-1){
+        l->id =ids;
+        strcpy(l->author,string);
+        l->times=1;
+        return l;
+    }
 	if(l==NULL){
 		l = cria(ids,string);
 		return l;
@@ -107,13 +114,13 @@ llink* ordenador(llink* l,llink* f){
 		}
 
 void printas(llink* l){
-		int n = 0;
-		while(l!=NULL && n < 10){
-			printf("Id: %d(%d)\n",l->id,l->times);
-			l = l->next;
-			n++;
-		}
-	}
+		while(l!=NULL){
+    printf("id: %d ",l->id);
+    printf("nome: %s ", l->author);
+    printf("times: %d\n",l->times);
+    l=l->next;}
+}
+/*
 llink* fazcenas(llink* l, char* string){
 	int n = 6;
 	while(n < 12){
@@ -131,9 +138,11 @@ llink* fazcenas(llink* l, char* string){
 
 	return l;
 }
-/*
+
 int main(int argc,char** argv){
 	llink* l = NULL;
+    l = primeiro(l);
+    printf("dacrkhg %d\n",l->id);
 	char* s = "string";
 	l = fazcenas(l,s);
 	

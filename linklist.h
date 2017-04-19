@@ -18,6 +18,6 @@ llink* lasti(llink* l);
 llink* insertUno(llink* l,int ids, char* string);
 int encontraPrimeiro(int ids,llink* l);
 void printas(llink* l);
-llink* firstAlt(llink* l, int ids, char*string);
+llink* primeiro(llink* l);
 
 #endif 

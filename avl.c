@@ -16,10 +16,8 @@ void dispose(node* t)
 //  free(t->content);
         free( t );
 
-
     }
 }
-
 
 /*
     find a specific node's key in the tree
@@ -36,7 +34,16 @@ node* find(int e, node* t )
         return t;
 }
 
-
+int counts(node* t){
+    int c = 1;
+    if(t==NULL) return 0;
+    else{
+        c += counts(t->left);
+        c += counts(t->right);
+        return c;
+    }
+    
+}
 
 /*
     find minimum node's key
@@ -160,6 +167,11 @@ static node* double_rotate_with_right( node* k1 )
 /*
     insert a new node into the tree
 */
+node* alterUno(node* t,int e,char* string){
+    t -> data = e;
+    strcpy(t->content,string);
+    return t;
+}
 node* insert(int e, node* t,char* string )
 {
 
