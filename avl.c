@@ -1,28 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "avl.h"
-#include <string.h>
-/*
-    remove all nodes of an AVL tree
-*/
-void dispose(node* t)
-{
-    if( t != NULL )
-    {
 
-
-        dispose( t->left );
-        dispose( t->right );
-//  free(t->content);
-        free( t );
-
-    }
-}
-
-/*
-    find a specific node's key in the tree
-*/
-node* find(int e, node* t )
+node* find(long e, node* t )
 {
     if( t == NULL )
         return NULL;
@@ -34,46 +12,69 @@ node* find(int e, node* t )
         return t;
 }
 
-int counts(node* t){
-    int c = 1;
-    if(t==NULL) return 0;
-    else{
-        c += counts(t->left);
-        c += counts(t->right);
-        return c;
+void disposeMini(mini* m){
+    if(m==NULL) return;
+    if(m!=NULL){
+        disposeMini(m->left);
+        disposeMini(m->right);
+        free(m->timestamp);
+        free(m);
+}
+    m = NULL;
+    return;
+}
+
+void dispose(node* t){
+    if(t==NULL) return;
+    if(t!=NULL){
+        dispose(t->left);
+        dispose(t->right);
+        disposeMini(t->mini);
+        t->mini=NULL;
+        free(t->content);
+        free(t);
     }
-    
+    t = NULL;
+    return;
 }
 
-/*
-    find minimum node's key
-*/
-node* find_min( node* t )
-{
-    if( t == NULL )
+int qtRevisoes(node* t){
+    int c = 0;
+    if(t==NULL){
+        return 0;
+    }
+        c = t->qtRevs;    
+        c += qtRevisoes(t->left);
+        c += qtRevisoes(t->right);
+        return c;
+}
+
+int contaMini(node* m){
+    int c = 0;
+    if(m==NULL)return 0;
+    c += contaMini(m->left);
+    c += contaMini(m->right); 
+    return c;
+}
+
+char* encontraRev(mini* m,int n){
+    if(m==NULL)
         return NULL;
-    else if( t->left == NULL )
-        return t;
+    if(n < m->data)
+        return encontraRev(m->left,n);
+    if(n > m -> data)
+        return encontraRev(m->right,n);
     else
-        return find_min( t->left );
+        return m -> timestamp;
 }
 
-/*
-    find maximum node's key
-*/
-node* find_max( node* t )
+
+static long max(long l, long r)
 {
-    if( t != NULL )
-        while( t->right != NULL )
-            t = t->right;
-
-    return t;
+    return l > r ? l: r;
 }
 
-/*
-    get the height of a node
-*/
-static int height( node* n )
+static int height(node* n)
 {
     if( n == NULL )
         return -1;
@@ -81,20 +82,22 @@ static int height( node* n )
         return n->height;
 }
 
-/*
-    get maximum value of two integers
-*/
-static int max( int l, int r)
-{
-    return l > r ? l: r;
+
+static int heightMini(mini* m){
+    if(m==NULL) return -1;
+    else return m -> height;
 }
 
-/*
-    perform a rotation between a k2 node and its left child
-
-    note: call single_rotate_with_left only if k2 node has a left child
-*/
-
+static mini* miniSingleLeft(mini* m){
+    mini* m1 = NULL;
+    m1 = m -> left;
+    m -> left = m1 -> right;
+    m1 -> right = m;
+    m->height = max(heightMini(m->left),heightMini(m->right))+1;
+    m1 -> height = max(heightMini(m1->left),m->height)+1;
+    return m1;
+}
+    
 static node* single_rotate_with_left( node* k2 )
 {
     node* k1 = NULL;
@@ -105,15 +108,18 @@ static node* single_rotate_with_left( node* k2 )
 
     k2->height = max( height( k2->left ), height( k2->right ) ) + 1;
     k1->height = max( height( k1->left ), k2->height ) + 1;
-    return k1; /* new root */
+    return k1;
 }
 
-/*
-    perform a rotation between a node (k1) and its right child
-
-    note: call single_rotate_with_right only if
-    the k1 node has a right child
-*/
+static mini* miniSingleRight(mini* m1){
+    mini* m = NULL;
+    m = m1 -> right;
+    m1 -> right = m ->left;
+    m -> left = m1;
+    m1->height = max(heightMini(m1->left),heightMini(m1->right))+1;
+    m -> height = max(heightMini(m->left),m1->height)+1;
+    return m;
+}
 
 static node* single_rotate_with_right( node* k1 )
 {
@@ -126,17 +132,13 @@ static node* single_rotate_with_right( node* k1 )
     k1->height = max( height( k1->left ), height( k1->right ) ) + 1;
     k2->height = max( height( k2->right ), k1->height ) + 1;
 
-    return k2;  /* New root */
+    return k2;
 }
 
-/*
-
-    perform the left-right double rotation,
-
-    note: call double_rotate_with_left only if k3 node has
-    a left child and k3's left child has a right child
-*/
-
+static mini* doubleMiniLeft(mini* m3){
+    m3 -> left = miniSingleRight(m3->left);
+    return miniSingleLeft(m3);
+}
 static node* double_rotate_with_left( node* k3 )
 {
     /* Rotate between k1 and k2 */
@@ -146,59 +148,75 @@ static node* double_rotate_with_left( node* k3 )
     return single_rotate_with_left( k3 );
 }
 
-/*
-    perform the right-left double rotation
-
-   notes: call double_rotate_with_right only if k1 has a
-   right child and k1's right child has a left child
-*/
-
-
+static mini* doubleMiniRight(mini* m){
+    m -> right = miniSingleLeft(m);
+    return miniSingleRight(m);
+}
 
 static node* double_rotate_with_right( node* k1 )
 {
-    /* rotate between K3 and k2 */
-    k1->right = single_rotate_with_left( k1->right );
 
-    /* rotate between k1 and k2 */
+    k1->right = single_rotate_with_left( k1->right );
     return single_rotate_with_right( k1 );
 }
 
-/*
-    insert a new node into the tree
-*/
-node* alterUno(node* t,int e,char* string){
-    t -> data = e;
-    strcpy(t->content,string);
-    return t;
+mini* insertMini(int e, mini* m,char* times,node* t){
+    if(m==NULL){
+        m = (mini*)malloc(sizeof(mini));
+        m -> timestamp = (char*)malloc(sizeof(char)*strlen(times)+1);
+        m -> data = e;
+        m -> height = 0;
+        strcpy(m -> timestamp,times);
+        m -> left = m -> right = NULL;
+        t -> qtRevs += 1;
+    }
+    else if( e < m->data )
+    {
+        m->left = insertMini( e, m->left,times,t);
+        if( heightMini(m->left) - heightMini(m->right)==2)
+            if( e < m->left->data )
+                m = miniSingleLeft(m);
+            else
+                m = doubleMiniLeft(m);
+    }
+    else if( e > m->data )
+    {
+        m->right = insertMini( e, m->right, times,t) ;
+        if( heightMini(m->right) - heightMini(m->left)==2)
+            if( e > m->right->data )
+                m = miniSingleRight(m);
+            else
+                m = doubleMiniRight(m);
+    }
+    m->height = max( heightMini(m->left), heightMini(m->right))+1;
+    return m;
 }
-node* insert(int e, node* t,char* string )
+node* insert(long e, node
+    * t,char* string,char* revisao,int a)
 {
-
     if( t == NULL )
     {
-        /* Create and return a one-node tree */
         t = (node*)malloc(sizeof(node));
-      //  t->content = NULL;
-
         if( t == NULL )
         {
             fprintf (stderr, "Out of memory!!! (insert)\n");
             exit(1);
         }
         else
-        {
+        {   
+            mini* f = NULL;
             t->data = e;
             t->height = 0;
             t->content = (char*)malloc(sizeof(char)*strlen(string)+1);
             strcpy( t->content, string );
-
             t->left = t->right = NULL;
+            t->qtRevs = 0;
+            t -> mini = insertMini(a,f,revisao,t);           
         }
     }
     else if( e < t->data )
     {
-        t->left = insert( e, t->left,string );
+        t->left = insert( e, t->left,string,revisao,a );
         if( height( t->left ) - height( t->right ) == 2 )
             if( e < t->left->data )
                 t = single_rotate_with_left( t );
@@ -207,17 +225,20 @@ node* insert(int e, node* t,char* string )
     }
     else if( e > t->data )
     {
-        t->right = insert( e, t->right, string ) ;
+        t->right = insert( e, t->right, string,revisao,a ) ;
         if( height( t->right ) - height( t->left ) == 2 )
             if( e > t->right->data )
                 t = single_rotate_with_right( t );
             else
                 t = double_rotate_with_right( t );
     }
-    /* Else X is in the tree already; we'll do nothing */
+    if(t -> data == e){
+        t -> mini = insertMini(a,t->mini,revisao,t);
+        }
     t->height = max( height( t->left ), height( t->right ) ) + 1;
     return t;
 }
+
 
 int countNodes(node* t){
     int c = 1;
@@ -230,42 +251,28 @@ int countNodes(node* t){
     }
 }
 
-
-node* delete( int e, node* t )
-{
-    printf( "Sorry; Delete is unimplemented; %d remains\n", e );
-    return t;
-}
-
-/*
-    data data of a node
-*/
 int get(node* n)
 {
     return n->data;
 }
 
-
-
-/*
-    Recursively display AVL tree or subtree
-*/
 /*
 int main(int argc, char** argv){
-    node* od = NULL;
-    int n = 5;
+    node* p = NULL;
     char* s = "stringas";
-    while(n < 14){
-        insert(n,od,s);
-        n++;
-    }
-    n= 0;
-    while(n <5){
-        insert(n,od,s);
-        n++;
-    }
-    printf("nodo: %d\n",od->data);
-    printf("nodo: %d\n",od->left->data);
-    return 81;
+    char* f = "strg";a
+    char* t = "conas";
+    char* rev = "revs";
+    char* test = NULL;
+    int a = 10;
+    int b = 25;
+    int c = 0;
+    p = insert(10,p,s,rev,&c,54);
+    p = insert(10,p,s,rev,&c,53);
+    p = insert(10,p,s,rev,&c,52);
+    p = insert(10,p,s,rev,&c,54);
+    p = insert(11,p,s,rev,&c,54);
+    p = insert(12,p,s,t,&c,50);
+return 1;
 }
 */

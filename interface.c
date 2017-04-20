@@ -17,8 +17,13 @@ int main(int argc,char** argv){
 	long* i = (long*)malloc(sizeof(long));
 	*i = 0;
     t = parseDocs(argv[1],&l,&i);
-    int f = counts(t);
-    dispose(t);
+    t = parseDocs(argv[2],&l,&i);
+    t = parseDocs(argv[3],&l,&i);
+    printf("quantidade de paginas:%ld\n",*i);
+    int f = countNodes(t);
+    printf("Quantidade de nos:%d\n",f);
+    printf("Quantidade de revisoes:%d\n",qtRevisoes(t));
+    printf("%s\n%d\n",l->author,l->id);
     free(i);
     return 1;
 }

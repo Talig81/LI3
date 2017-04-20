@@ -1,22 +1,32 @@
 #ifndef AVLTREE_H_INCLUDED
 #define AVLTREE_H_INCLUDED
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct node {
-  int data;
+  long data;
   char *content;
   struct node *left;
   struct node *right;
   int height;
+  struct mini *mini;
+  int qtRevs;
 } node;
 
+typedef struct mini{
+    int data;
+    int height;
+    char* timestamp;
+    struct mini *left;
+    struct mini *right;
+}mini;
+
+
 void dispose(node *t);
-node *find(int e, node *t);
-node *find_min(node *t);
-node *find_max(node *t);
-node *insert(int e, node* t,char* string );
-node *delete (int data, node *t);
+node *find(long e, node *t);
+node* insert(long e, node* t,char* string,char* revisao,int a);
 int countNodes(node* t);
-node* display_avl(node *t);
 int get(node *n);
-int counts(node* t);
+int qtRevisoes(node* t);
 #endif // AVLTREE_H_INCLUDED

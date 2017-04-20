@@ -7,7 +7,6 @@ void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,llink** l){
     while(contributor != NULL){
         if((!xmlStrcmp(contributor->name,(const xmlChar*)"username"))){
             user = xmlNodeListGetString(doc,contributor->xmlChildrenNode,1);
-            
         }
         if((!xmlStrcmp(contributor->name,(const xmlChar*)"id"))){
             idC = xmlNodeListGetString(doc,contributor->xmlChildrenNode,1);  
@@ -18,12 +17,18 @@ void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,llink** l){
     }
 }
 
-void parseRevision(xmlDocPtr doc, xmlNodePtr revision,llink** l){
+void parseRevision(xmlDocPtr doc,xmlNodePtr revision,llink** l,xmlChar** string,xmlChar** redID){
     xmlNodePtr contributor;
     while(revision != NULL){
+        if((!xmlStrcmp(revision->name,(const xmlChar*)"id"))){
+            *redID = xmlNodeListGetString(doc,revision->xmlChildrenNode,1);
+        }
         if((!xmlStrcmp(revision->name,(const xmlChar*)"contributor"))){
             contributor = revision -> xmlChildrenNode;
             parseContributor(doc,contributor,l);
+        }
+        if((!xmlStrcmp(revision->name,(const xmlChar*)"timestamp"))){
+            *string = xmlNodeListGetString(doc,revision->xmlChildrenNode,1);
         }
         revision = xmlNextElementSibling(revision);
     }
@@ -33,22 +38,28 @@ node* parsePage(llink** l,xmlDocPtr doc, xmlNodePtr child, node* t){
     xmlChar* title;
     xmlChar* idD;
     xmlNodePtr revision;
-    int numr=0;
+    xmlChar* times;
+    xmlChar* idS;
+    int flag = 1;
+    long numr=0;
+    int numID=0;
     while(child != NULL){
         if((!xmlStrcmp(child->name,(const xmlChar*)"title"))){
             title=xmlNodeListGetString(doc,child->xmlChildrenNode,1);
         }
         if((!xmlStrcmp(child->name,(const xmlChar*)"id"))){
             idD = xmlNodeListGetString(doc,child->xmlChildrenNode,1);
-            numr = atoi(idD);
+            numr = atol(idD);
+            if(numr==0)printf("fodeu\n");
         }
         if((!xmlStrcmp(child->name,(const xmlChar*)"revision"))){
             revision = child -> xmlChildrenNode;
-            parseRevision(doc,revision,l);
+            parseRevision(doc,revision,l,&times,&idS);
+            numID = atoi(idS);
         }
         if(numr != 0){
-            t = insert(numr,t,title);
-            numr = 0;
+            t = insert(numr,t,title,times,numID);
+            numr=0;
         }
         child = xmlNextElementSibling(child);
     }
@@ -62,7 +73,6 @@ node* oneParse(llink** l,xmlDocPtr doc, xmlNodePtr cur, node* t,long** j){
         child = cur -> xmlChildrenNode;
         t = parsePage(l,doc,child,t);
         (**j)++;
-        printf("%ld\n",**j);
         cur = xmlNextElementSibling(cur);
 
 
