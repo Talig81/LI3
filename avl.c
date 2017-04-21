@@ -49,11 +49,20 @@ int qtRevisoes(node* t){
         return c;
 }
 
-int contaMini(node* m){
+int contaMini(mini* m){
     int c = 0;
     if(m==NULL)return 0;
     c += contaMini(m->left);
     c += contaMini(m->right); 
+    return c;
+}
+
+int contaTudo(node* t){
+    int c = 1;
+    if(t==NULL)return 0;
+    c += contaTudo(t->left);
+    c += contaTudo(t->right);
+    c += contaMini(t->mini);
     return c;
 }
 
@@ -191,8 +200,7 @@ mini* insertMini(int e, mini* m,char* times,node* t){
     m->height = max( heightMini(m->left), heightMini(m->right))+1;
     return m;
 }
-node* insert(long e, node
-    * t,char* string,char* revisao,int a)
+node* insert(long e, node * t,char* string,char* revisao,int a)
 {
     if( t == NULL )
     {
@@ -256,23 +264,4 @@ int get(node* n)
     return n->data;
 }
 
-/*
-int main(int argc, char** argv){
-    node* p = NULL;
-    char* s = "stringas";
-    char* f = "strg";a
-    char* t = "conas";
-    char* rev = "revs";
-    char* test = NULL;
-    int a = 10;
-    int b = 25;
-    int c = 0;
-    p = insert(10,p,s,rev,&c,54);
-    p = insert(10,p,s,rev,&c,53);
-    p = insert(10,p,s,rev,&c,52);
-    p = insert(10,p,s,rev,&c,54);
-    p = insert(11,p,s,rev,&c,54);
-    p = insert(12,p,s,t,&c,50);
-return 1;
-}
-*/
+

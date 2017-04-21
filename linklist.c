@@ -17,7 +17,7 @@ void deletas(llink** l){
 	}
 
 
-llink* encontra(int ids, llink* l){
+llink* encontra(int ids, llink* l,int* i){
 	llink* t = l;
 	llink* c = l;
 	t = t -> next;
@@ -26,7 +26,8 @@ llink* encontra(int ids, llink* l){
 		c = t;
 		t = t->next;
 	}
-	return NULL;
+    (*i)=1;
+	return c;
 }
 
 llink* cria(int ids, char* string){
@@ -77,16 +78,16 @@ llink* insertUno(llink* l, int ids,char* string){
 		l -> times += 1;
 		return l;
 	}
-	test = encontra(ids,l);
-	if(test!=NULL){
+    int i = 0;
+	test = encontra(ids,l,&i);
+	if(test!=NULL&&i==0){
 		test->next->times += 1;
 		l = ordenador(aux,test);
 		return l;
 	}
 	else{
-		aux = lasti(aux);
 		llink* nodo = cria(ids,string);
-		aux -> next = nodo;
+		test -> next = nodo;
 		return l;
 	}
 }

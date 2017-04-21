@@ -11,7 +11,7 @@ typedef struct llink{
 
 void deletas(llink** l);
 void printas(llink* l);
-llink* encontra(int ids, llink* l);
+llink* encontra(int ids, llink* l,int* i);
 llink* ordenador(llink* l,llink* f);
 llink* cria(int ids, char* string);
 llink* lasti(llink* l);

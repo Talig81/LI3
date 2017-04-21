@@ -3730,4 +3730,44 @@ Water ports of Alabama, listed from north to south:
     <title> Anarquistas</title>
     <id>10</id>
   </page>
+   <page>
+    <title>AlbaniaGovernment</title>
+    <ns>0</ns>
+    <id>35</id>
+    <redirect title="Politics of Albania" />
+    <revision>
+      <id>7446712</id>
+      <parentid>15898965</parentid>
+      <timestamp>2006-09-08T04:19:45Z</timestamp>
+      <contributor>
+        <username>Rory096</username>
+        <id>750223</id>
+      </contributor>
+      <comment>cat rd</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Politics of Albania]] {{R from CamelCase}}</text>
+      <sha1>9la5osjxpu0aysereletnbv44up2k8j</sha1>
+    </revision>
+    </page>
+     <page>
+    <title>AlbaniaGovernment</title>
+    <ns>0</ns>
+    <id>35</id>
+    <redirect title="Politics of Albania" />
+    <revision>
+      <id>744678</id>
+      <parentid>15898965</parentid>
+      <timestamp>2006-09-08T04:19:45Z</timestamp>
+      <contributor>
+        <username>Rory096</username>
+        <id>750223</id>
+      </contributor>
+      <comment>cat rd</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Politics of Albania]] {{R from CamelCase}}</text>
+      <sha1>9la5osjxpu0aysereletnbv44up2k8j</sha1>
+    </revision>
+    </page>
 </mediawiki>

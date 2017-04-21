@@ -29,4 +29,6 @@ node* insert(long e, node* t,char* string,char* revisao,int a);
 int countNodes(node* t);
 int get(node *n);
 int qtRevisoes(node* t);
+int contaTudo(node* t);
+
 #endif // AVLTREE_H_INCLUDED

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "parser.h"
 #include "avl.h"
 #include "linklist.h"
@@ -12,18 +13,18 @@ TAD_istruct init(){
 
 //TAD_istruct load(TAD_istruct qs , int nsnaps , char* snaps_paths[]){
 int main(int argc,char** argv){
+	clock_t tp1,tp2,tp3;
 	llink* l = primeiro(l);
+	llink* k = primeiro(k);
 	node* t = NULL;
 	long* i = (long*)malloc(sizeof(long));
 	*i = 0;
-    t = parseDocs(argv[1],&l,&i);
-    t = parseDocs(argv[2],&l,&i);
-    t = parseDocs(argv[3],&l,&i);
+    t = parseDocs(argv[1],&l,&i,&t,&k);
+    t = parseDocs(argv[2],&l,&i,&t,&k);
+    t = parseDocs(argv[3],&l,&i,&t,&k);
     printf("quantidade de paginas:%ld\n",*i);
     int f = countNodes(t);
-    printf("Quantidade de nos:%d\n",f);
-    printf("Quantidade de revisoes:%d\n",qtRevisoes(t));
-    printf("%s\n%d\n",l->author,l->id);
+    printf("unicos: %d lmaior: %d\n",f,k->id);
     free(i);
     return 1;
 }
