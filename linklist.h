@@ -1,23 +1,10 @@
 #ifndef LISTA_LIGADA
 #define LISTA_LIGADA
 
-typedef struct llink{
-	int id;
-	char* author;
-	int times;
-	struct llink *next;
-} llink;
+typedef struct llink* LLINK;
 
-
-void deletas(llink** l);
-void printas(llink* l);
-llink* encontra(int ids, llink* l,int* i);
-llink* ordenador(llink* l,llink* f);
-llink* cria(int ids, char* string);
-llink* lasti(llink* l);
-llink* insertUno(llink* l,int ids, char* string);
-int encontraPrimeiro(int ids,llink* l);
-void printas(llink* l);
-llink* primeiro(llink* l);
-
+LLINK initLL();
+LLINK encontra(int ids, LLINK l,int* i);
+LLINK insertUno(LLINK l,int ids, char* string);
+void printas(LLINK l);
 #endif 

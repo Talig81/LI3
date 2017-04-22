@@ -1,7 +1,42 @@
 #include "parser.h"
+#define SIZE 20
 
 
-void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,llink** l){
+int getPos(long* array, long numb){
+    int i = 0;
+    while(i<SIZE){
+        if(numb > array[i]) return i;
+        i++;
+    }
+return -1;
+}
+
+int sort_ordn(long* array, long numb){
+    int j = getPos(array,numb);
+    if(j==-1) return -1;
+    long temp = array[j];
+    long aux;
+    array[j] = numb;
+    for(int i=j+1;i<SIZE;i++){
+        aux = array[i];
+        array[i] = temp;
+        temp = aux;
+    }
+    return j;
+}
+
+void sort_iDs(long* array,long numb,int pos){
+    if(pos == -1) return;
+    long temp = array[pos];
+    long aux;
+    array[pos] = numb;
+    for(int i=pos+1;i<SIZE;i++){
+        aux = array[i];
+        array[i] = temp;
+        temp = aux;
+    }
+}
+void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,LLINK l){
     xmlChar* user='\0';
     xmlChar* idC=NULL;
     int numb=0;
@@ -13,7 +48,7 @@ void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,llink** l){
         if((!xmlStrcmp(contributor->name,(const xmlChar*)"id"))){
             idC = xmlNodeListGetString(doc,contributor->xmlChildrenNode,1);  
             numb = atoi(idC);
-            (*l) = insertUno((*l),numb,user);
+            l = insertUno(l,numb,user);
             xmlFree(user);
             xmlFree(idC);
         }    
@@ -21,7 +56,7 @@ void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,llink** l){
     }
 }
 
-void parseRevision(xmlDocPtr doc,xmlNodePtr revision,llink** l,xmlChar** string,xmlChar** redID,node* t,long* numr){
+void parseRevision(xmlDocPtr doc,xmlNodePtr revision,LLINK l,xmlChar** string,xmlChar** redID,NODE t,long* numr){
     xmlNodePtr contributor;
     int aux = 0;
     while(revision != NULL){
@@ -30,9 +65,9 @@ void parseRevision(xmlDocPtr doc,xmlNodePtr revision,llink** l,xmlChar** string,
             aux = atoi(*redID);
         }
         if((!xmlStrcmp(revision->name,(const xmlChar*)"contributor"))){
-           if((encontraRev(t,&aux,numr)) == 0){
+           
             contributor = revision -> xmlChildrenNode;
-            parseContributor(doc,contributor,l);}
+            parseContributor(doc,contributor,l);
         }
         if((!xmlStrcmp(revision->name,(const xmlChar*)"timestamp"))){
             *string = xmlNodeListGetString(doc,revision->xmlChildrenNode,1);
@@ -41,7 +76,7 @@ void parseRevision(xmlDocPtr doc,xmlNodePtr revision,llink** l,xmlChar** string,
     }
 }
 
-node* parsePage(llink** l,xmlDocPtr doc, xmlNodePtr child, node* t){
+NODE parsePage(LLINK l,xmlDocPtr doc, xmlNodePtr child, NODE t){
     xmlChar* title;
     xmlChar* idD;
     xmlNodePtr revision;
@@ -74,15 +109,16 @@ node* parsePage(llink** l,xmlDocPtr doc, xmlNodePtr child, node* t){
 
         child = xmlNextElementSibling(child);
     }
+
     return t;
 
 }
 
-node* oneParse(llink** l,xmlDocPtr doc, xmlNodePtr cur, node* t,long** j){
+NODE oneParse(LLINK l,xmlDocPtr doc, xmlNodePtr cur, NODE t,long** j,long* qtBytes,long* idsBytes){
     xmlNodePtr child;
     while(cur != NULL){
         child = cur -> xmlChildrenNode;
-        t = parsePage(l,doc,child,t);
+        t = parsePage(l,doc,child,t,*qtBytes,*idsBytes);
         (**j)++;
         cur = xmlNextElementSibling(cur);
 
@@ -91,21 +127,28 @@ node* oneParse(llink** l,xmlDocPtr doc, xmlNodePtr cur, node* t,long** j){
     return t;
 }
 
-node* parseDocs(char* ficheiro,llink** l,long** i,node** t){
-    node* zx = *t; 
+NODE parseDocs(char* ficheiro,LLINK l,long** i,NODE t){
+    NODE zx = t; 
     xmlDocPtr doc;
     long* j = *i;
-    llink* f = *l;
+    LLINK f = l;
+    long qtBytes[20];
+    long idsBytes[20];
+    for(int iter = 0 ; iter<SIZE; iter++){
+        qtBytes[iter] = (long)malloc(sizeof(long));
+        idsBytes[iter] = (long)malloc(sizeof(long));
+        idsBytes[iter] = qtBytes[iter] = 0;
+    }
     doc = xmlParseFile(ficheiro);
     xmlNodePtr cur;
     cur = xmlDocGetRootElement(doc);
     cur = cur -> xmlChildrenNode;
     cur = xmlNextElementSibling(cur);
     cur = xmlNextElementSibling(cur);
-    zx = oneParse(&f,doc,cur,zx,&j);
-    *l=f;
-    *i=j;
-    zx;
+    zx = oneParse(f,doc,cur,zx,&j,*qtBytes,*idsBytes);
+    l = f;
+    t = zx;
+    *i = j;
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return zx;

@@ -3,7 +3,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-void deletas(llink** l){
+struct llink{
+	int id;
+	char* author;
+	int times;
+	struct llink *next;
+};
+
+LLINK initLL(){
+	LLINK l = malloc(sizeof(struct llink));
+    l -> id = -1;
+    l -> author = (char*)malloc(sizeof(char*)*52);
+    l -> times = 0;
+    return l;
+}
+
+/*void deletas(llink** l){
 		llink* current = *l;
 		llink* next;
 		while(current != NULL){
@@ -14,12 +29,12 @@ void deletas(llink** l){
 			current = next;
 		}
 		*l = NULL;
-	}
+	}*/
 
 
-llink* encontra(int ids, llink* l,int* i){
-	llink* t = l;
-	llink* c = l;
+LLINK encontra(int ids, LLINK l,int* i){
+	LLINK t = l;
+	LLINK c = l;
 	t = t -> next;
 	while(t!=NULL){
 		if(t->id == ids) return c;
@@ -30,8 +45,8 @@ llink* encontra(int ids, llink* l,int* i){
 	return c;
 }
 
-llink* cria(int ids, char* string){
-	llink* l = (llink*) malloc(sizeof(llink));
+LLINK cria(int ids, char* string){
+	LLINK l = malloc(sizeof(struct llink));
 	l -> id = ids;
 	l -> author = (char*)malloc(sizeof(char)*strlen(string)+1);
 	if(string != NULL) strcpy(l->author, string);
@@ -40,61 +55,14 @@ llink* cria(int ids, char* string){
 	return l;
 }
 
-int encontraPrimeiro(int ids,llink* l){
+int encontraPrimeiro(int ids,LLINK l){
 	if(ids == l->id) return 1;
 	else return 0;
 }
 
-llink* lasti(llink* l){
-	while(l->next != NULL){
-		l = l -> next;
-	}
-	return l;
-}
-
-
-llink* primeiro(llink* l){
-    l = (llink*)malloc(sizeof(llink));
-    l -> id = -1;
-    l -> author = (char*)malloc(sizeof(char*)*52);
-    l -> times = 0;
-    return l;
-}
-
-llink* insertUno(llink* l, int ids,char* string){
-    if(l->id==-1){
-        l->id =ids;
-        strcpy(l->author,string);
-        l->times=1;
-        return l;
-    }
-	if(l==NULL){
-		l = cria(ids,string);
-		return l;
-	}			
-	llink* test;
-	llink* aux = l;
-	if(encontraPrimeiro(ids,l)==1){
-		l -> times += 1;
-		return l;
-	}
-    int i = 0;
-	test = encontra(ids,l,&i);
-	if(test!=NULL&&i==0){
-		test->next->times += 1;
-		l = ordenador(aux,test);
-		return l;
-	}
-	else{
-		llink* nodo = cria(ids,string);
-		test -> next = nodo;
-		return l;
-	}
-}
-
-llink* ordenador(llink* l,llink* f){
-		llink* c = f -> next;
-		llink* aux = l;
+LLINK ordenador(LLINK l,LLINK f){
+		LLINK c = f -> next;
+		LLINK aux = l;
 		if(c -> times > f -> times){
 			f -> next = c -> next;
 			c -> next = NULL;
@@ -114,7 +82,41 @@ llink* ordenador(llink* l,llink* f){
 			return l;
 		}
 
-void printas(llink* l){
+
+LLINK insertUno(LLINK l, int ids,char* string){
+    if(l->id==-1){
+        l->id =ids;
+        strcpy(l->author,string);
+        l->times=1;
+        return l;
+    }
+	if(l==NULL){
+		l = cria(ids,string);
+		return l;
+	}			
+	LLINK test;
+	LLINK aux = l;
+	if(encontraPrimeiro(ids,l)==1){
+		l -> times += 1;
+		return l;
+	}
+    int i = 0;
+	test = encontra(ids,l,&i);
+	if(test!=NULL&&i==0){
+		test->next->times += 1;
+		l = ordenador(aux,test);
+		return l;
+	}
+	else{
+		LLINK nodo = cria(ids,string);
+		test -> next = nodo;
+		return l;
+	}
+}
+
+
+
+void printas(LLINK l){
 		while(l!=NULL){
     printf("id: %d ",l->id);
     printf("nome: %s ", l->author);

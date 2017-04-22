@@ -1,6 +1,27 @@
 #include "avl.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-node* find(long e, node* t )
+struct node {
+  long data;
+  char *content;
+  struct node *left;
+  struct node *right;
+  int height;
+  struct mini *mini;
+  int qtRevs;
+};
+
+struct mini{
+    int data;
+    int height;
+    char* timestamp;
+    struct mini *left;
+    struct mini *right;
+};
+
+NODE find(long e, NODE t )
 {
     if( t == NULL )
         return NULL;
@@ -14,14 +35,16 @@ node* find(long e, node* t )
 
 
 
-mini* encontraContrs(mini* m, int* n){
+
+M encontraContrs(M m, int* n){
     if(m==NULL) return NULL;
+    printf("m:%p\n",m);
     if(*n > m->data) return encontraContrs(m->right,n);
     else if(*n < m->data) return encontraContrs(m->left,n);
     else return m;
 }
 
-void disposeMini(mini* m){
+void disposeMini(M m){
     if(m==NULL) return;
     if(m!=NULL){
         disposeMini(m->left);
@@ -33,20 +56,20 @@ void disposeMini(mini* m){
     return;
 }
 
-int encontraRev(node* t,int* n,long* number){
+int encontraRev(NODE t,int* n,long* number){
         if(t==NULL) return 0;
-        node* c = t;
+        NODE c = t;
         c = find(*number,c);
         if(c==NULL) return 0;
         else{
-            mini* m = c->mini;
-            m =encontraContrs(m,n);
+            M m = c->mini;
+            m = encontraContrs(m,n);
             if(m==NULL) return 0;
             else return 1;
         }
 }
 
-void dispose(node* t){
+void dispose(NODE t){
     if(t==NULL) return;
     if(t!=NULL){
         dispose(t->left);
@@ -60,7 +83,7 @@ void dispose(node* t){
     return;
 }
 
-int qtRevisoes(node* t){
+int qtRevisoes(NODE t){
     int c = 0;
     if(t==NULL){
         return 0;
@@ -71,24 +94,8 @@ int qtRevisoes(node* t){
         return c;
 }
 
-int contaMini(mini* m){
-    int c = 0;
-    if(m==NULL)return 0;
-    c += contaMini(m->left);
-    c += contaMini(m->right); 
-    return c;
-}
 
-int contaTudo(node* t){
-    int c = 1;
-    if(t==NULL)return 0;
-    c += contaTudo(t->left);
-    c += contaTudo(t->right);
-    c += contaMini(t->mini);
-    return c;
-}
-
-char* encontraTime(mini* m,int n){
+char* encontraTime(M m,int n){
     if(m==NULL)
         return NULL;
     if(n < m->data)
@@ -105,7 +112,7 @@ static long max(long l, long r)
     return l > r ? l: r;
 }
 
-static int height(node* n)
+static int height(NODE n)
 {
     if( n == NULL )
         return -1;
@@ -114,13 +121,13 @@ static int height(node* n)
 }
 
 
-static int heightMini(mini* m){
+static int heightMini(M m){
     if(m==NULL) return -1;
     else return m -> height;
 }
 
-static mini* miniSingleLeft(mini* m){
-    mini* m1 = NULL;
+static M miniSingleLeft(M m){
+    M m1 = NULL;
     m1 = m -> left;
     m -> left = m1 -> right;
     m1 -> right = m;
@@ -129,9 +136,9 @@ static mini* miniSingleLeft(mini* m){
     return m1;
 }
     
-static node* single_rotate_with_left( node* k2 )
+ NODE single_rotate_with_left( NODE k2 )
 {
-    node* k1 = NULL;
+    NODE k1 = NULL;
 
     k1 = k2->left;
     k2->left = k1->right;
@@ -142,8 +149,8 @@ static node* single_rotate_with_left( node* k2 )
     return k1;
 }
 
-static mini* miniSingleRight(mini* m1){
-    mini* m = NULL;
+static M miniSingleRight(M m1){
+    M m = NULL;
     m = m1 -> right;
     m1 -> right = m ->left;
     m -> left = m1;
@@ -152,9 +159,9 @@ static mini* miniSingleRight(mini* m1){
     return m;
 }
 
-static node* single_rotate_with_right( node* k1 )
+static NODE single_rotate_with_right( NODE k1 )
 {
-    node* k2;
+    NODE k2;
 
     k2 = k1->right;
     k1->right = k2->left;
@@ -166,11 +173,11 @@ static node* single_rotate_with_right( node* k1 )
     return k2;
 }
 
-static mini* doubleMiniLeft(mini* m3){
+static M doubleMiniLeft(M m3){
     m3 -> left = miniSingleRight(m3->left);
     return miniSingleLeft(m3);
 }
-static node* double_rotate_with_left( node* k3 )
+static NODE double_rotate_with_left( NODE k3 )
 {
     /* Rotate between k1 and k2 */
     k3->left = single_rotate_with_right( k3->left );
@@ -179,27 +186,31 @@ static node* double_rotate_with_left( node* k3 )
     return single_rotate_with_left( k3 );
 }
 
-static mini* doubleMiniRight(mini* m){
+static M doubleMiniRight(M m){
     m -> right = miniSingleLeft(m);
     return miniSingleRight(m);
 }
 
-static node* double_rotate_with_right( node* k1 )
+static NODE double_rotate_with_right( NODE k1 )
 {
 
     k1->right = single_rotate_with_left( k1->right );
     return single_rotate_with_right( k1 );
 }
-
-mini* insertMini(int e, mini* m,char* times,node* t){
-    if(m==NULL){
-        m = (mini*)malloc(sizeof(mini));
+M initMini(int e,char* times, NODE t){
+    M m = malloc(sizeof(struct mini));
         m -> timestamp = (char*)malloc(sizeof(char)*strlen(times)+1);
         m -> data = e;
         m -> height = 0;
         strcpy(m -> timestamp,times);
         m -> left = m -> right = NULL;
         t -> qtRevs += 1;
+        return m;
+}
+
+M insertMini(int e, M m,char* times,NODE t){
+    if(m==NULL){
+        m = initMini(e,times,t);
     }
     else if( e < m->data )
     {
@@ -222,11 +233,11 @@ mini* insertMini(int e, mini* m,char* times,node* t){
     m->height = max( heightMini(m->left), heightMini(m->right))+1;
     return m;
 }
-node* insert(long e, node * t,char* string,char* revisao,int a)
+NODE insert(long e, NODE t,char* string,char* revisao,int a)
 {
     if( t == NULL )
     {
-        t = (node*)malloc(sizeof(node));
+        t = malloc(sizeof(struct node));
         if( t == NULL )
         {
             fprintf (stderr, "Out of memory!!! (insert)\n");
@@ -234,7 +245,7 @@ node* insert(long e, node * t,char* string,char* revisao,int a)
         }
         else
         {   
-            mini* f = NULL;
+            M f = NULL;
             t->data = e;
             t->height = 0;
             t->content = (char*)malloc(sizeof(char)*strlen(string)+1);
@@ -270,7 +281,7 @@ node* insert(long e, node * t,char* string,char* revisao,int a)
 }
 
 
-int countNodes(node* t){
+int countNodes(NODE t){
     int c = 1;
     if(t==NULL)
         return 0;
@@ -281,7 +292,7 @@ int countNodes(node* t){
     }
 }
 
-int get(node* n)
+int get(NODE n)
 {
     return n->data;
 }

@@ -5,29 +5,35 @@
 #include "parser.h"
 #include "avl.h"
 #include "linklist.h"
+#include "interface.h"
 
-typedef struct TCD_istruct* TAD_istruct;
+
+struct TCD_istruct{
+	struct node* NODE;
+	struct llink* LLINK;
+};
 
 TAD_istruct init(){
+	TAD_istruct t = malloc(sizeof(struct TCD_istruct));
+	t -> NODE = NULL;
+	t -> LLINK = initLL();
+	return t;
 }
 
 //TAD_istruct load(TAD_istruct qs , int nsnaps , char* snaps_paths[]){
 int main(int argc,char** argv){
-	clock_t tp1,tp2,tp3;
-	llink* l = primeiro(l);
-	node* t = NULL;
 	long* i = (long*)malloc(sizeof(long));
 	*i = 0;
-    t = parseDocs(argv[1],&l,&i,&t);
-    t = parseDocs(argv[2],&l,&i,&t);
-    t = parseDocs(argv[3],&l,&i,&t);
+	TAD_istruct t = init();
+    t->NODE = parseDocs(argv[1],t->LLINK,&i,t->NODE);
+    t->NODE = parseDocs(argv[2],t->LLINK,&i,t->NODE);
+    t->NODE = parseDocs(argv[3],t->LLINK,&i,t->NODE);
+    printf("cheguei aqui\n");
     printf("quantidade de paginas:%ld\n",*i);
-    int f = countNodes(t);
-    printf("numeroRevs %d,uniq%d\n",qtRevisoes(t),f);
-    for(int as = 0; as < 10;as++){ printf("%d times:%d\n",l->id,l->times);
-    							 l = l-> next;}
+    int f = countNodes(t->NODE);
+    printf("numeroRevs %d,uniq%d\n",qtRevisoes(t->NODE),f);
     free(i);
-    deletas(&l);
+    
     return 1;
 }
 
