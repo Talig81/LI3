@@ -30,5 +30,5 @@ int countNodes(node* t);
 int get(node *n);
 int qtRevisoes(node* t);
 int contaTudo(node* t);
-
+int encontraRev(node* t,int* n, long* number);
 #endif // AVLTREE_H_INCLUDED

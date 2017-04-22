@@ -12,6 +12,15 @@ node* find(long e, node* t )
         return t;
 }
 
+
+
+mini* encontraContrs(mini* m, int* n){
+    if(m==NULL) return NULL;
+    if(*n > m->data) return encontraContrs(m->right,n);
+    else if(*n < m->data) return encontraContrs(m->left,n);
+    else return m;
+}
+
 void disposeMini(mini* m){
     if(m==NULL) return;
     if(m!=NULL){
@@ -22,6 +31,19 @@ void disposeMini(mini* m){
 }
     m = NULL;
     return;
+}
+
+int encontraRev(node* t,int* n,long* number){
+        if(t==NULL) return 0;
+        node* c = t;
+        c = find(*number,c);
+        if(c==NULL) return 0;
+        else{
+            mini* m = c->mini;
+            m =encontraContrs(m,n);
+            if(m==NULL) return 0;
+            else return 1;
+        }
 }
 
 void dispose(node* t){
@@ -66,13 +88,13 @@ int contaTudo(node* t){
     return c;
 }
 
-char* encontraRev(mini* m,int n){
+char* encontraTime(mini* m,int n){
     if(m==NULL)
         return NULL;
     if(n < m->data)
-        return encontraRev(m->left,n);
+        return encontraTime(m->left,n);
     if(n > m -> data)
-        return encontraRev(m->right,n);
+        return encontraTime(m->right,n);
     else
         return m -> timestamp;
 }

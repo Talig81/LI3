@@ -146,6 +146,9 @@ int main(int argc,char** argv){
     printf("dacrkhg %d\n",l->id);
 	char* s = "string";
 	l = fazcenas(l,s);
+	l = insertUno(l,6,s);
+	l = insertUno(l,12,s);
+	l = insertUno(l,6,s);
 	
 	//printf("%d\n",l->id);
 	if( l == NULL)

@@ -12,6 +12,6 @@
 #include "linklist.h"
 
 
-node* parseDocs(char* ficheiro,llink** l,long** i,node** b,llink** k);
+node* parseDocs(char* ficheiro,llink** l,long** i,node** b);
 
 #endif

@@ -15,17 +15,19 @@ TAD_istruct init(){
 int main(int argc,char** argv){
 	clock_t tp1,tp2,tp3;
 	llink* l = primeiro(l);
-	llink* k = primeiro(k);
 	node* t = NULL;
 	long* i = (long*)malloc(sizeof(long));
 	*i = 0;
-    t = parseDocs(argv[1],&l,&i,&t,&k);
-    t = parseDocs(argv[2],&l,&i,&t,&k);
-    t = parseDocs(argv[3],&l,&i,&t,&k);
+    t = parseDocs(argv[1],&l,&i,&t);
+    t = parseDocs(argv[2],&l,&i,&t);
+    t = parseDocs(argv[3],&l,&i,&t);
     printf("quantidade de paginas:%ld\n",*i);
     int f = countNodes(t);
-    printf("unicos: %d lmaior: %d\n",f,k->id);
+    printf("numeroRevs %d,uniq%d\n",qtRevisoes(t),f);
+    for(int as = 0; as < 10;as++){ printf("%d times:%d\n",l->id,l->times);
+    							 l = l-> next;}
     free(i);
+    deletas(&l);
     return 1;
 }
 
