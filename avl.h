@@ -19,6 +19,6 @@ long bitie(NODE t);
 long wordie(NODE t);
 long get(NODE t);
 M getMini(NODE t);
-int encontraRev(NODE t,int n,long number);
+int encontraRev(NODE t,int* n,long number);
 int encontraContribuidores(M m, long n);
 #endif // AVLTREE_H_INCLUDED

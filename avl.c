@@ -43,8 +43,8 @@ int preFixes(NODE t,char** arr, int i,char* string){
     if(t == NULL)
         return i;
     if(startsWith(string,t->content)){
-        arr[i]=malloc(sizeof(char)*30);
-        arr[i] = strcpy(arr[i],t->content);
+        arr[i] = strdup(t->content);
+        arr[i+1]=malloc(sizeof(char)*30);
         i++;
     }
     if(t->left != NULL)
@@ -123,11 +123,11 @@ void disposeMini(M m){
     return;
 }
 
-int encontraRev(NODE t,int n,long number){
+int encontraRev(NODE t,int* n,long number){
     if(t==NULL) return 0;
     NODE f = t;
     NODE c = t;
-    f = find(n,c);
+    f = find(*n,c);
     if(f == NULL) return 0;
     M mini = encontraContrs(getMini(f),&number);
     if(mini == NULL) return 0;
@@ -360,7 +360,8 @@ int main(){
     NODE t = NULL;
     long a = 10;
     long b = 40;
-    char* arr[19000];
+    int fd = 40;
+    char** arr = malloc(sizeof(char)*19000);
     t = insert (10,t,"titulo","2424-2424-242",40,&a,&b);
     t = insert (12,t,"tr","42342",41,&a,&b);
     t = insert (13,t,"titular","234",44,&a,&b);
@@ -369,13 +370,12 @@ int main(){
     printf("aa%ld\n",f->data);
     printf("%ld\n",t->mini->data);
     printf("%ld\n",t->data);
-    printf("PFF %d\n",encontraRev(t,40,10));
+    printf("PFF %d\n",encontraRev(t,&fd,10));
     int i = encontraContribuidores(t->mini,41);
     char* string = "t";
     printf("fds%d\n",i);
-    return i;
-    /*
-    printf("%d\n",preFixes(t,arr,i,string));
+    int cd = 0;
+    printf("%d\n",preFixes(t,arr,cd,string));
     printf("%s %s %s\n",arr[0],arr[1],arr[2]);
     printf("%s %s %s\n",arr[0],arr[1],arr[2]);
     return 1;

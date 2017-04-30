@@ -32,7 +32,7 @@ TAD_istruct load(TAD_istruct qs , int nsnaps , char* snaps_paths[]){
 	long* i = (long*)malloc(sizeof(long));
 	*i = 0;
 	for(int iter = 0; iter < nsnaps ;iter++){
-    	qs->NODE = parseDocs(snaps_paths[iter],&(qs->LLINK),&i,qs->NODE);
+    	qs->NODE = parseDocs(snaps_paths[iter],&(qs->LLINK),&i,&(qs->NODE));
     }
     qs -> HEAP = constroi(qs->HEAP,qs->NODE);
     qs -> HEAP_W = constroiWord(qs->HEAP_W,qs->NODE);
@@ -78,16 +78,10 @@ long* top_N_articles_with_more_words(int n, TAD_istruct qs){
 	return aux;
 }
 char** titles_with_prefix(char* prefix, TAD_istruct qs){
-	char* arr[19000];
-	int f = preFixes(qs->NODE,arr,0,prefix);
-	if(f==0) return NULL;
-	char** array;
-	array = malloc(sizeof(char*)*f);
-	for(int i = 0; i<f;i++){
-		array[i] = malloc(sizeof(strlen(arr[i])+1));
-		array[i] = strcpy(array[i],arr[i]);
-	}
-	return array;
+	char** arr = malloc(sizeof(arr)*19000);
+	int f = 0;
+	f = preFixes(qs->NODE,arr,f,prefix);
+	return arr;
 }
 char* article_timestamp(long article_id, long revision_id, TAD_istruct qs){
 	char * s = NULL;
@@ -101,9 +95,11 @@ void apaga(long* aux){
 	return;
 }
 
+
 int main(int argc,char** argv){
 	TAD_istruct t = init();
 	t = load(t , argc-1 , argv+1);
+	
 	printf("unique: %ld\n\n",unique_articles(t));
 	printf("revisions: %ld\n\n",all_revisions(t));
 	printf("titulo %s\n\n4Query:\n",article_title(25,t));
@@ -116,12 +112,13 @@ int main(int argc,char** argv){
 	}
 	printf("Artigo: 25| Titulo:%s\n\n",article_title(25,t));
 	for(int i = 0; i<10;i++) printf("TOP20 %ld\n\n",coise[i]);
-	/*char* prefix = "Aut";
+	char* prefix = malloc(sizeof(char)*19);
+	prefix = "Aut";
 	char** nf = titles_with_prefix(prefix,t);
 	if(nf == NULL) return 0;
 	for(int i = 0; i<2;i++){
 		printf("%s\n",nf[i]);
-	}*/
+	}
 	printf("Timestamptas: %s\n",article_timestamp(25,751028090,t));
 	return 1;
 }

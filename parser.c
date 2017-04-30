@@ -43,17 +43,20 @@ void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,LLINK* l){
     }
 }
 
-char* parseRevision(xmlDocPtr doc,xmlNodePtr revision,LLINK* l,xmlChar** string,NODE t,long* idArt,long* qtBytes,long* a){
+char* parseRevision(xmlDocPtr doc,xmlNodePtr revision,LLINK* l,xmlChar** string,NODE* t,long* idArt,long* qtBytes,long* a){
     xmlNodePtr contributor,texto;
     xmlChar* idRev;
-    int aux = 0;
+    int* aux = malloc(sizeof(int));
     while(revision != NULL){
         if((!xmlStrcmp(revision->name,(const xmlChar*)"id"))){
             idRev = xmlNodeListGetString(doc,revision->xmlChildrenNode,1);
+            (*aux) = atoi((const char*)idRev);
         }
         if((!xmlStrcmp(revision->name,(const xmlChar*)"contributor"))){
-            contributor = revision -> xmlChildrenNode;
-            parseContributor(doc,contributor,l);  
+            if(encontraRev((*t),aux,(*idArt))==0){
+                contributor = revision -> xmlChildrenNode;
+                parseContributor(doc,contributor,l);  
+            }
         }
         if((!xmlStrcmp(revision->name,(const xmlChar*)"timestamp"))){
             *string = xmlNodeListGetString(doc,revision->xmlChildrenNode,1);
@@ -67,7 +70,7 @@ char* parseRevision(xmlDocPtr doc,xmlNodePtr revision,LLINK* l,xmlChar** string,
     return (char*)idRev;
 }
 
-NODE parsePage(LLINK* l,xmlDocPtr doc, xmlNodePtr child, NODE t){
+NODE parsePage(LLINK* l,xmlDocPtr doc, xmlNodePtr child, NODE* t){
     xmlChar* title;
     xmlChar* idPoin;
     xmlNodePtr revision;
@@ -92,7 +95,7 @@ NODE parsePage(LLINK* l,xmlDocPtr doc, xmlNodePtr child, NODE t){
             idRev = atoi((const char*)idparseRev);
         }
         if(idArt != 0&&idRev!=0){
-            t = insert(idArt,t,(char*)title,(char*)times,idRev,a,&bytes);
+            (*t) = insert(idArt,(*t),(char*)title,(char*)times,idRev,a,&bytes);
             a = 0;
             idArt=0;
             idRev=0;
@@ -102,23 +105,22 @@ NODE parsePage(LLINK* l,xmlDocPtr doc, xmlNodePtr child, NODE t){
         }
         child = xmlNextElementSibling(child);
     }
-    return t;
+    return (*t);
 
 }
 
-NODE oneParse(LLINK *l,xmlDocPtr doc, xmlNodePtr cur, NODE t,long** j){
+NODE oneParse(LLINK *l,xmlDocPtr doc, xmlNodePtr cur, NODE* t,long** j){
     xmlNodePtr child;
     while(cur != NULL){
         child = cur -> xmlChildrenNode;
-        t = parsePage(l,doc,child,t);
+        (*t) = parsePage(l,doc,child,t);
         (**j)++;
         cur = xmlNextElementSibling(cur);
     }
-    return t;
+    return (*t);
 }
 
-NODE parseDocs(char* ficheiro,LLINK* l,long** i,NODE t){
-    NODE zx = t;
+NODE parseDocs(char* ficheiro,LLINK* l,long** i,NODE* t){
     xmlDocPtr doc;
     long* j = *i;
     doc = xmlParseFile(ficheiro);
@@ -128,10 +130,9 @@ NODE parseDocs(char* ficheiro,LLINK* l,long** i,NODE t){
     cur = cur -> xmlChildrenNode;
     cur = xmlNextElementSibling(cur);
     cur = xmlNextElementSibling(cur);
-    zx = oneParse(l,doc,cur,zx,&j);
-    t = zx;
+    (*t) = oneParse(l,doc,cur,t,&j);
     *i = j;
     xmlFreeDoc(doc);
     xmlCleanupParser();
-    return zx;
+    return (*t);
 }
