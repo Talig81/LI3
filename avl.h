@@ -5,6 +5,8 @@
 typedef struct node* NODE;
 typedef struct mini* M;
 
+void setTotal(NODE t, int n);
+int getTotal(NODE t);
 int preFixes(NODE t,char** argv, int i,char* string);
 void dispose(NODE t);
 NODE find(long e, NODE t);
@@ -19,6 +21,6 @@ long bitie(NODE t);
 long wordie(NODE t);
 long get(NODE t);
 M getMini(NODE t);
-int encontraRev(NODE t,int* n,long number);
+int encontraRev(NODE t,long* n,long number);
 int encontraContribuidores(M m, long n);
 #endif // AVLTREE_H_INCLUDED

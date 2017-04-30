@@ -24,9 +24,9 @@ LLINK lasti(LLINK l){
 	while(l->next != NULL) l = l -> next;
 	return l;
 }
-/*void deletas(llink** l){
-		llink* current = *l;
-		llink* next;
+void deletas(LLINK* l){
+		LLINK current = *l;
+		LLINK next;
 		while(current != NULL){
 			next = current -> next;
 			free(current -> author);
@@ -35,7 +35,7 @@ LLINK lasti(LLINK l){
 			current = next;
 		}
 		*l = NULL;
-	}*/
+	}
 
 LLINK encontra(long ids, LLINK l){
 	LLINK t = l;
@@ -186,11 +186,11 @@ int main(int argc,char** argv){
     l = insertUno(l,81,NULL);
     l = insertUno(l,81,NULL);
 	//printf("%d\n",l->id);
+	deletas(&l);
 	if( l == NULL)
 		printf("MAIN NULL\n");
 	printas(l);
 	return 1;
-}
+}*/
 
 
-*/

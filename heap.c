@@ -36,6 +36,14 @@ HEAP constroiWord(HEAP h,NODE t){
     push(h,wordie(t),get(t));
     return h;
 }
+/*
+void eraseHeap(HEAP* h){
+    for(int i = 0;i<(*h)->size-1;i++){
+        free((*h)->nodes);
+    }
+    free(h);
+    return;
+}*/
 
 long* printasHEAP(HEAP h,int n,long* aux){
     for(int i = 0; i < n;i++){
@@ -53,6 +61,7 @@ void push (HEAP h, long priority, long data) {
     int j = i / 2;
 
     while (i > 1 && h->nodes[j].priority < priority) {
+        
         h->nodes[i] = h->nodes[j];
         i = j;
         j = j / 2;
@@ -100,9 +109,7 @@ int main () {
     push(h, 5, 65);
     push(h, 1, 81);
     push(h, 2, 4);
-    int i;
-    for (i = 0; i < 5; i++) {
-        printf("%ld\n", pop(h));
-    }
-    return 0;
+    int i =0;
+    if(h==NULL) printf("bem");
+    return i;
 }*/

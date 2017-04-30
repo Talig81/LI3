@@ -2,11 +2,11 @@
 #include <stdbool.h>
 
 
-bool palavra(char c){
+static bool palavra(char c){
     return (c == ' ' || c == '\n' || c == '\t');
 }
 
-long parseText(xmlDocPtr doc, xmlNodePtr texto,long* nW){
+static long parseText(xmlDocPtr doc, xmlNodePtr texto,long* nW){
     char* text=(char*) xmlNodeGetContent(texto);
     long nBytes=0;
     long nWords=0;
@@ -26,7 +26,7 @@ long parseText(xmlDocPtr doc, xmlNodePtr texto,long* nW){
     return nBytes;
 }
 
-void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,LLINK* l){
+static void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,LLINK* l){
     xmlChar* user = NULL;
     xmlChar* idC = NULL;
     long numb=0;
@@ -43,7 +43,7 @@ void parseContributor(xmlDocPtr doc, xmlNodePtr contributor,LLINK* l){
     }
 }
 
-char* parseRevision(xmlDocPtr doc,xmlNodePtr revision,LLINK* l,xmlChar** string,NODE* t,long* idArt,long* qtBytes,long* a){
+static char* parseRevision(xmlDocPtr doc,xmlNodePtr revision,LLINK* l,xmlChar** string,NODE t,long* idArt,long* qtBytes,long* a){
     xmlNodePtr contributor,texto;
     xmlChar* idRev;
     int* aux = malloc(sizeof(int));
@@ -53,11 +53,12 @@ char* parseRevision(xmlDocPtr doc,xmlNodePtr revision,LLINK* l,xmlChar** string,
             (*aux) = atoi((const char*)idRev);
         }
         if((!xmlStrcmp(revision->name,(const xmlChar*)"contributor"))){
-            if(encontraRev((*t),aux,(*idArt))==0){
-                contributor = revision -> xmlChildrenNode;
-                parseContributor(doc,contributor,l);  
-            }
-        }
+                    if(encontraRev(t,idArt,(*aux))==0){
+                        contributor = revision -> xmlChildrenNode;
+                        parseContributor(doc,contributor,l);
+                    }  
+                }
+        
         if((!xmlStrcmp(revision->name,(const xmlChar*)"timestamp"))){
             *string = xmlNodeListGetString(doc,revision->xmlChildrenNode,1);
         }
@@ -70,7 +71,7 @@ char* parseRevision(xmlDocPtr doc,xmlNodePtr revision,LLINK* l,xmlChar** string,
     return (char*)idRev;
 }
 
-NODE parsePage(LLINK* l,xmlDocPtr doc, xmlNodePtr child, NODE* t){
+static NODE parsePage(LLINK* l,xmlDocPtr doc, xmlNodePtr child, NODE t){
     xmlChar* title;
     xmlChar* idPoin;
     xmlNodePtr revision;
@@ -95,7 +96,7 @@ NODE parsePage(LLINK* l,xmlDocPtr doc, xmlNodePtr child, NODE* t){
             idRev = atoi((const char*)idparseRev);
         }
         if(idArt != 0&&idRev!=0){
-            (*t) = insert(idArt,(*t),(char*)title,(char*)times,idRev,a,&bytes);
+            t = insert(idArt,t,(char*)title,(char*)times,idRev,a,&bytes);
             a = 0;
             idArt=0;
             idRev=0;
@@ -105,19 +106,25 @@ NODE parsePage(LLINK* l,xmlDocPtr doc, xmlNodePtr child, NODE* t){
         }
         child = xmlNextElementSibling(child);
     }
-    return (*t);
+    return t;
 
 }
 
-NODE oneParse(LLINK *l,xmlDocPtr doc, xmlNodePtr cur, NODE* t,long** j){
+static NODE oneParse(LLINK *l,xmlDocPtr doc, xmlNodePtr cur, NODE t,long** j){
     xmlNodePtr child;
+    int aux = 0;
+    int conta=0;
+    if(t!= NULL) aux = getTotal(t);
     while(cur != NULL){
         child = cur -> xmlChildrenNode;
-        (*t) = parsePage(l,doc,child,t);
+        t = parsePage(l,doc,child,t);
+        conta++;
         (**j)++;
         cur = xmlNextElementSibling(cur);
     }
-    return (*t);
+    conta += aux;
+    setTotal(t,conta);
+    return t;
 }
 
 NODE parseDocs(char* ficheiro,LLINK* l,long** i,NODE* t){
@@ -130,7 +137,7 @@ NODE parseDocs(char* ficheiro,LLINK* l,long** i,NODE* t){
     cur = cur -> xmlChildrenNode;
     cur = xmlNextElementSibling(cur);
     cur = xmlNextElementSibling(cur);
-    (*t) = oneParse(l,doc,cur,t,&j);
+    (*t) = oneParse(l,doc,cur,(*t),&j);
     *i = j;
     xmlFreeDoc(doc);
     xmlCleanupParser();

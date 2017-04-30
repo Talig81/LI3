@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define MAXLNE 20;
 #define NUMBS 19000;
 
 struct node {
@@ -17,6 +16,7 @@ struct node {
   int qtRevs;
   long maxBytes;
   long nW;
+  int totaL;
 };
 
 struct mini{
@@ -32,18 +32,28 @@ NODE leftie(NODE t){
     return t;
 }
 
-bool startsWith(const char *pre, const char *str)
-{
-    size_t lenpre = strlen(pre),
-           lenstr = strlen(str);
-    return lenstr < lenpre ? false : strncmp(pre, str, lenpre) == 0;
+static M esqui(M m){
+    m = m->left;
+    return m;
 }
+
+static M direi(M m){
+    m = m-> right;
+    return m;
+}
+
+static bool startsWith(const char *pre, const char *str){
+    size_t lenpre = strlen(pre),
+    lenstr = strlen(str);
+    return lenstr < lenpre ? false : strncmp(pre, str, lenpre) == 0;
+} 
+
 
 int preFixes(NODE t,char** arr, int i,char* string){
     if(t == NULL)
         return i;
     if(startsWith(string,t->content)){
-        arr[i] = strdup(t->content);
+        arr[i] = (char*)strdup(t->content);
         arr[i+1]=malloc(sizeof(char)*30);
         i++;
     }
@@ -77,13 +87,18 @@ NODE find(long e, NODE t ){
     else
         return t;
 }
+static long getDAta(M m){
+    return m->data;
+}
 
-M encontraContrs(M m, long* n){
+
+static M encontraContrs(M m, long* n){
     if(m==NULL) return NULL;
-    if(*n > m->data) return encontraContrs(m->right,n);
-    else if(*n < m->data) return encontraContrs(m->left,n);
+    if(*n > getDAta(m)) return encontraContrs(esqui(m),n);
+    else if(*n < getDAta(m)) return encontraContrs(direi(m),n);
     else return m;
 }
+
 
 M getMini(NODE t){
     if(t==NULL) return NULL;
@@ -123,7 +138,7 @@ void disposeMini(M m){
     return;
 }
 
-int encontraRev(NODE t,int* n,long number){
+int encontraRev(NODE t,long* n,long number){
     if(t==NULL) return 0;
     NODE f = t;
     NODE c = t;
@@ -188,7 +203,7 @@ static M miniSingleLeft(M m){
     return m1;
 }
     
- NODE single_rotate_with_left( NODE k2 )
+static NODE single_rotate_with_left( NODE k2 )
 {
     NODE k1 = NULL;
 
@@ -267,20 +282,20 @@ M insertMini(int e, M m,char* times,NODE t){
     else if( e < m->data )
     {
         m->left = insertMini( e, m->left,times,t);
-        if( heightMini(m->left) - heightMini(m->right)==2)
+        if( heightMini(m->left) - heightMini(m->right)==2){
             if( e < m->left->data )
                 m = miniSingleLeft(m);
             else
                 m = doubleMiniLeft(m);
-    }
-    else if( e > m->data )
-    {
+    }}
+    else if( e > m->data ){
         m->right = insertMini( e, m->right, times,t) ;
-        if( heightMini(m->right) - heightMini(m->left)==2)
+        if( heightMini(m->right) - heightMini(m->left)==2){
             if( e > m->right->data )
                 m = miniSingleRight(m);
             else
                 m = doubleMiniRight(m);
+        }
     }
     m->height = max( heightMini(m->left), heightMini(m->right))+1;
     return m;
@@ -307,26 +322,27 @@ NODE insert(long e, NODE t,char* string,char* revisao,int a,long* bytess,long* n
             t->qtRevs = 0;
             t->maxBytes = (*bytess);
             t->nW = 0;
+            t->totaL = 0;
             t -> mini = insertMini(a,f,revisao,t);           
         }
     }
     else if( e < t->data )
     {
         t->left = insert( e, t->left,string,revisao,a,bytess,nWord);
-        if( height( t->left ) - height( t->right ) == 2 )
+        if( height( t->left ) - height( t->right ) == 2 ){
             if( e < t->left->data )
                 t = single_rotate_with_left( t );
             else
-                t = double_rotate_with_left( t );
+                t = double_rotate_with_left( t );}
     }
     else if( e > t->data )
     {
         t->right = insert( e, t->right, string,revisao,a,bytess,nWord ) ;
-        if( height( t->right ) - height( t->left ) == 2 )
+        if( height( t->right ) - height( t->left ) == 2 ){
             if( e > t->right->data )
                 t = single_rotate_with_right( t );
             else
-                t = double_rotate_with_right( t );
+                t = double_rotate_with_right( t );}
     }
     if(t -> data == e){
         t -> mini = insertMini(a,t->mini,revisao,t);
@@ -349,6 +365,13 @@ int countNodes(NODE t){
     }
 }
 
+void setTotal(NODE t, int n){
+    t -> totaL = n;
+}
+int getTotal(NODE n){
+    return n->totaL;
+}
+
 long get(NODE n)
 {
     return n->data;
@@ -356,7 +379,7 @@ long get(NODE n)
 
 
 /*
-int main(){
+int main(int main, char** argv){
     NODE t = NULL;
     long a = 10;
     long b = 40;
@@ -365,18 +388,14 @@ int main(){
     t = insert (10,t,"titulo","2424-2424-242",40,&a,&b);
     t = insert (12,t,"tr","42342",41,&a,&b);
     t = insert (13,t,"titular","234",44,&a,&b);
-    NODE f = find(12,t);
-    if(f->mini==NULL) printf("foi aqui\n");
-    printf("aa%ld\n",f->data);
-    printf("%ld\n",t->mini->data);
-    printf("%ld\n",t->data);
-    printf("PFF %d\n",encontraRev(t,&fd,10));
-    int i = encontraContribuidores(t->mini,41);
-    char* string = "t";
-    printf("fds%d\n",i);
-    int cd = 0;
+    
+    // inserir prefixos desordenados
+
     printf("%d\n",preFixes(t,arr,cd,string));
-    printf("%s %s %s\n",arr[0],arr[1],arr[2]);
-    printf("%s %s %s\n",arr[0],arr[1],arr[2]);
+
+    // falta ordena los
+    
+
+  //  printf("NODO:%ld Rev: %ld\n NODO ESQ: %ld REV: %ld\n",t->data,t->mini->data,t->left->data,t->left->mini->data);
     return 1;
 }*/

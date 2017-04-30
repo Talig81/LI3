@@ -36,12 +36,12 @@ TAD_istruct load(TAD_istruct qs , int nsnaps , char* snaps_paths[]){
     }
     qs -> HEAP = constroi(qs->HEAP,qs->NODE);
     qs -> HEAP_W = constroiWord(qs->HEAP_W,qs->NODE);
-   	qs -> all = *i;
-    free(i);
+   	qs -> all = *i+2;
     return qs;
 }
 
 long all_articles(TAD_istruct qs){
+		printf("%d\n",getTotal(qs->NODE));
 		return qs -> all;
 }
 long unique_articles(TAD_istruct qs){
@@ -78,7 +78,7 @@ long* top_N_articles_with_more_words(int n, TAD_istruct qs){
 	return aux;
 }
 char** titles_with_prefix(char* prefix, TAD_istruct qs){
-	char** arr = malloc(sizeof(arr)*19000);
+	char** arr = malloc(sizeof(char*)*19000);
 	int f = 0;
 	f = preFixes(qs->NODE,arr,f,prefix);
 	return arr;
@@ -95,7 +95,16 @@ void apaga(long* aux){
 	return;
 }
 
-
+TAD_istruct clean(TAD_istruct qs){
+	dispose(qs->NODE);
+	deletas(&(qs->LLINK));
+	qs->NODE = NULL;
+	qs -> HEAP_W = NULL;
+	qs -> HEAP = NULL;
+	free(qs);
+	return NULL;
+}
+/*
 int main(int argc,char** argv){
 	TAD_istruct t = init();
 	t = load(t , argc-1 , argv+1);
@@ -120,5 +129,7 @@ int main(int argc,char** argv){
 		printf("%s\n",nf[i]);
 	}
 	printf("Timestamptas: %s\n",article_timestamp(25,751028090,t));
+	t = clean(t);
+	if(t==NULL) printf("DID IT\n");
 	return 1;
-}
+}*/
