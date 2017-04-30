@@ -52,10 +52,9 @@ static bool startsWith(const char *pre, const char *str){
 int preFixes(NODE t,char** arr, int i,char* string){
     if(t == NULL)
         return i;
-    if(startsWith(string,t->content)){
-        arr[i] = (char*)strdup(t->content);
-        arr[i+1]=malloc(sizeof(char)*30);
-        i++;
+    if (startsWith(string,t->content)){
+        arr[i++] = (char*) strdup(t->content);
+        /* arr[i+1]=malloc(sizeof(char)*30); */
     }
     if(t->left != NULL)
         i = preFixes(t->left, arr, i,string);

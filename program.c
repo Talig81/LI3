@@ -29,9 +29,10 @@ void menu_principal(){
 void interpretador(TAD_istruct qs){
 		int q = -1;
 		menu_query();
-		while(scanf("%d",&q)){
+		while(scanf("%d\n",&q)){
 			if(q ==  0){
 				printf("Sair\n");	
+				exit(0);	
 			}
 			if(q ==  1){
 				printf("Artigos totais: %ld\n",all_articles(qs));
@@ -87,12 +88,12 @@ void interpretador(TAD_istruct qs){
 				
 			}
 			if(q ==  9){
-				char* c= (char*)malloc(sizeof(char*)*30);
-				char** f = malloc(sizeof(char*)*19000);
-				scanf("Insira o prefixo:%s",c);
+				char c[30];
+				char** f;
+				printf("Insira o prefixo\n");
+				scanf("%s\n",c);
 				f = titles_with_prefix(c,qs);
-				printf("did it");
-				for(int i = 0; i < 5;i++){
+				for(int i = 0; f[i]; i++){
 					printf("Titulo:%s\n",f[i]);
 				}
 			}

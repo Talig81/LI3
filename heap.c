@@ -17,6 +17,9 @@ struct heap_t{
 
 HEAP initHeap(){
     HEAP hea = malloc(sizeof(struct heap_t));
+    hea -> nodes = malloc(10 * sizeof(struct node_t));
+    hea -> size = 10;
+    hea -> len = 0;
     push(hea,1,1);
     return hea;
 }
@@ -60,7 +63,7 @@ void push (HEAP h, long priority, long data) {
     int i = h->len + 1;
     int j = i / 2;
 
-    while (i > 1 && h->nodes[j].priority < priority) {
+    while (i > 1 && h-> nodes[j].priority < priority) {
         
         h->nodes[i] = h->nodes[j];
         i = j;
@@ -72,7 +75,7 @@ void push (HEAP h, long priority, long data) {
     h->len++;
 }
  
-long pop (HEAP h) {
+long pop(HEAP h) {
     int i, j, k;
     if (!h->len) {
         return 0;

@@ -81,6 +81,7 @@ char** titles_with_prefix(char* prefix, TAD_istruct qs){
 	char** arr = malloc(sizeof(char*)*19000);
 	int f = 0;
 	f = preFixes(qs->NODE,arr,f,prefix);
+    arr[f] = NULL;
 	return arr;
 }
 char* article_timestamp(long article_id, long revision_id, TAD_istruct qs){
