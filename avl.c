@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
+#define MAXLNE 20;
+#define NUMBS 19000;
 
 struct node {
   long data;
@@ -11,18 +15,59 @@ struct node {
   int height;
   struct mini *mini;
   int qtRevs;
+  long maxBytes;
+  long nW;
 };
 
 struct mini{
-    int data;
+    long data;
     int height;
     char* timestamp;
     struct mini *left;
     struct mini *right;
 };
 
-NODE find(long e, NODE t )
+NODE leftie(NODE t){
+    t = t->left;
+    return t;
+}
+
+bool startsWith(const char *pre, const char *str)
 {
+    size_t lenpre = strlen(pre),
+           lenstr = strlen(str);
+    return lenstr < lenpre ? false : strncmp(pre, str, lenpre) == 0;
+}
+
+int preFixes(NODE t,char** arr, int i,char* string){
+    if(t == NULL)
+        return i;
+    if(startsWith(string,t->content)){
+        arr[i]=malloc(sizeof(char)*30);
+        arr[i] = strcpy(arr[i],t->content);
+        i++;
+    }
+    if(t->left != NULL)
+        i = preFixes(t->left, arr, i,string);
+    if(t->right != NULL)
+        i = preFixes(t->right, arr, i,string);
+    return i;
+}
+
+long bitie(NODE t){
+    return t->maxBytes;
+}
+
+long wordie(NODE t){
+    return t-> nW;
+}
+
+NODE rightie(NODE t){
+    t = t->right;
+    return t;
+}
+
+NODE find(long e, NODE t ){
     if( t == NULL )
         return NULL;
     if( e < t->data )
@@ -33,15 +78,37 @@ NODE find(long e, NODE t )
         return t;
 }
 
-
-
-
-M encontraContrs(M m, int* n){
+M encontraContrs(M m, long* n){
     if(m==NULL) return NULL;
-    printf("m:%p\n",m);
     if(*n > m->data) return encontraContrs(m->right,n);
     else if(*n < m->data) return encontraContrs(m->left,n);
     else return m;
+}
+
+M getMini(NODE t){
+    if(t==NULL) return NULL;
+    return t->mini;
+}
+
+int encontraContribuidores(M m, long n){
+    if(m==NULL) return 0;
+    if(n > m->data) return encontraContribuidores(m->right,n);
+    else if(n < m->data) return encontraContribuidores(m->left,n);
+    else return 1;
+}
+
+char* encontraTitulo(NODE t, long n, long m){
+    NODE f = find(n,t);
+    if(f == NULL) return NULL;
+    M mini = encontraContrs(f -> mini, &m);
+    if(mini == NULL) return NULL;
+    return mini->timestamp;
+}
+
+char* encontraTimestamp(NODE t, long n){
+    NODE f = find(n,t);
+    if ( f == NULL) return NULL;
+    return f -> content;
 }
 
 void disposeMini(M m){
@@ -51,22 +118,20 @@ void disposeMini(M m){
         disposeMini(m->right);
         free(m->timestamp);
         free(m);
-}
+    }
     m = NULL;
     return;
 }
 
-int encontraRev(NODE t,int* n,long* number){
-        if(t==NULL) return 0;
-        NODE c = t;
-        c = find(*number,c);
-        if(c==NULL) return 0;
-        else{
-            M m = c->mini;
-            m = encontraContrs(m,n);
-            if(m==NULL) return 0;
-            else return 1;
-        }
+int encontraRev(NODE t,int n,long number){
+    if(t==NULL) return 0;
+    NODE f = t;
+    NODE c = t;
+    f = find(n,c);
+    if(f == NULL) return 0;
+    M mini = encontraContrs(getMini(f),&number);
+    if(mini == NULL) return 0;
+    return 1;
 }
 
 void dispose(NODE t){
@@ -93,19 +158,6 @@ int qtRevisoes(NODE t){
         c += qtRevisoes(t->right);
         return c;
 }
-
-
-char* encontraTime(M m,int n){
-    if(m==NULL)
-        return NULL;
-    if(n < m->data)
-        return encontraTime(m->left,n);
-    if(n > m -> data)
-        return encontraTime(m->right,n);
-    else
-        return m -> timestamp;
-}
-
 
 static long max(long l, long r)
 {
@@ -233,7 +285,7 @@ M insertMini(int e, M m,char* times,NODE t){
     m->height = max( heightMini(m->left), heightMini(m->right))+1;
     return m;
 }
-NODE insert(long e, NODE t,char* string,char* revisao,int a)
+NODE insert(long e, NODE t,char* string,char* revisao,int a,long* bytess,long* nWord)
 {
     if( t == NULL )
     {
@@ -249,15 +301,18 @@ NODE insert(long e, NODE t,char* string,char* revisao,int a)
             t->data = e;
             t->height = 0;
             t->content = (char*)malloc(sizeof(char)*strlen(string)+1);
+            if(string == NULL) t->content = NULL;
             strcpy( t->content, string );
             t->left = t->right = NULL;
             t->qtRevs = 0;
+            t->maxBytes = (*bytess);
+            t->nW = 0;
             t -> mini = insertMini(a,f,revisao,t);           
         }
     }
     else if( e < t->data )
     {
-        t->left = insert( e, t->left,string,revisao,a );
+        t->left = insert( e, t->left,string,revisao,a,bytess,nWord);
         if( height( t->left ) - height( t->right ) == 2 )
             if( e < t->left->data )
                 t = single_rotate_with_left( t );
@@ -266,7 +321,7 @@ NODE insert(long e, NODE t,char* string,char* revisao,int a)
     }
     else if( e > t->data )
     {
-        t->right = insert( e, t->right, string,revisao,a ) ;
+        t->right = insert( e, t->right, string,revisao,a,bytess,nWord ) ;
         if( height( t->right ) - height( t->left ) == 2 )
             if( e > t->right->data )
                 t = single_rotate_with_right( t );
@@ -275,6 +330,8 @@ NODE insert(long e, NODE t,char* string,char* revisao,int a)
     }
     if(t -> data == e){
         t -> mini = insertMini(a,t->mini,revisao,t);
+        if(*bytess>t->maxBytes) t -> maxBytes =*bytess;
+        if(*nWord > t->nW) t -> nW = *nWord;
         }
     t->height = max( height( t->left ), height( t->right ) ) + 1;
     return t;
@@ -292,9 +349,34 @@ int countNodes(NODE t){
     }
 }
 
-int get(NODE n)
+long get(NODE n)
 {
     return n->data;
 }
 
 
+/*
+int main(){
+    NODE t = NULL;
+    long a = 10;
+    long b = 40;
+    char* arr[19000];
+    t = insert (10,t,"titulo","2424-2424-242",40,&a,&b);
+    t = insert (12,t,"tr","42342",41,&a,&b);
+    t = insert (13,t,"titular","234",44,&a,&b);
+    NODE f = find(12,t);
+    if(f->mini==NULL) printf("foi aqui\n");
+    printf("aa%ld\n",f->data);
+    printf("%ld\n",t->mini->data);
+    printf("%ld\n",t->data);
+    printf("PFF %d\n",encontraRev(t,40,10));
+    int i = encontraContribuidores(t->mini,41);
+    char* string = "t";
+    printf("fds%d\n",i);
+    return i;
+    /*
+    printf("%d\n",preFixes(t,arr,i,string));
+    printf("%s %s %s\n",arr[0],arr[1],arr[2]);
+    printf("%s %s %s\n",arr[0],arr[1],arr[2]);
+    return 1;
+}*/

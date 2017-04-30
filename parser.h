@@ -10,8 +10,8 @@
 #include <libxml/xmlmemory.h>
 #include "avl.h"
 #include "linklist.h"
+#include "heap.h"
 
-
-NODE parseDocs(char* ficheiro,LLINK l,long** i,NODE t);
+NODE parseDocs(char* ficheiro,LLINK* l,long** i,NODE t);
 
 #endif

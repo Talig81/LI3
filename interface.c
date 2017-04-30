@@ -6,69 +6,122 @@
 #include "avl.h"
 #include "linklist.h"
 #include "interface.h"
-
+#include "heap.h"
 
 struct TCD_istruct{
 	struct node* NODE;
 	struct llink* LLINK;
+	struct heap_t* HEAP;
+	long all;
+	struct heap_t * HEAP_W;
+	long* auxiliar;
 };
 
 TAD_istruct init(){
 	TAD_istruct t = malloc(sizeof(struct TCD_istruct));
 	t -> NODE = NULL;
 	t -> LLINK = initLL();
+	t -> HEAP = initHeap();
+	t -> HEAP_W = initHeap();
+	t -> auxiliar = malloc(sizeof(long)*20);
+	t -> all = 0;
 	return t;
 }
 
-//TAD_istruct load(TAD_istruct qs , int nsnaps , char* snaps_paths[]){
-int main(int argc,char** argv){
+TAD_istruct load(TAD_istruct qs , int nsnaps , char* snaps_paths[]){
 	long* i = (long*)malloc(sizeof(long));
 	*i = 0;
-	TAD_istruct t = init();
-    t->NODE = parseDocs(argv[1],t->LLINK,&i,t->NODE);
-    t->NODE = parseDocs(argv[2],t->LLINK,&i,t->NODE);
-    t->NODE = parseDocs(argv[3],t->LLINK,&i,t->NODE);
-    printf("cheguei aqui\n");
-    printf("quantidade de paginas:%ld\n",*i);
-    int f = countNodes(t->NODE);
-    printf("numeroRevs %d,uniq%d\n",qtRevisoes(t->NODE),f);
+	for(int iter = 0; iter < nsnaps ;iter++){
+    	qs->NODE = parseDocs(snaps_paths[iter],&(qs->LLINK),&i,qs->NODE);
+    }
+    qs -> HEAP = constroi(qs->HEAP,qs->NODE);
+    qs -> HEAP_W = constroiWord(qs->HEAP_W,qs->NODE);
+   	qs -> all = *i;
     free(i);
-    
-    return 1;
+    return qs;
 }
 
 long all_articles(TAD_istruct qs){
+		return qs -> all;
 }
-
 long unique_articles(TAD_istruct qs){
-
+	return countNodes(qs->NODE);
 }
-
 long all_revisions(TAD_istruct qs){
-
+		return qtRevisoes(qs->NODE);
 }
 
 long* top_10_contributors(TAD_istruct qs){
-
+	LLINK f = qs -> LLINK;
+	qs->auxiliar = giveFirst(f);
+	return qs->auxiliar;
 }
-
 char* contributor_name(long contributor_id, TAD_istruct qs){
-
+	char * aux = findContr(contributor_id,qs->LLINK);
+	if(aux != NULL) return aux;
+	return NULL;
 }
-
 long* top_20_largest_articles(TAD_istruct qs){
-
+	qs -> auxiliar = printasHEAP(qs->HEAP_W,20,qs->auxiliar);
+	return qs->auxiliar;
 }
 
 char* article_title(long article_id, TAD_istruct qs){
+	char*s= NULL;
+	s = encontraTimestamp(qs->NODE,article_id);
+	if( s == NULL) return NULL;
+	return s;	
 }
-
 long* top_N_articles_with_more_words(int n, TAD_istruct qs){
+	long* aux = (long*)malloc(sizeof(long)*n);
+	aux = printasHEAP(qs->HEAP,n,aux);
+	return aux;
 }
- 
 char** titles_with_prefix(char* prefix, TAD_istruct qs){
+	char* arr[19000];
+	int f = preFixes(qs->NODE,arr,0,prefix);
+	if(f==0) return NULL;
+	char** array;
+	array = malloc(sizeof(char*)*f);
+	for(int i = 0; i<f;i++){
+		array[i] = malloc(sizeof(strlen(arr[i])+1));
+		array[i] = strcpy(array[i],arr[i]);
+	}
+	return array;
+}
+char* article_timestamp(long article_id, long revision_id, TAD_istruct qs){
+	char * s = NULL;
+	s = encontraTitulo(qs->NODE,article_id,revision_id);
+	if(s ==NULL) return NULL;
+	return s;
 }
 
-char* article_timestamp(long article_id, long revision_id, TAD_istruct qs){
+void apaga(long* aux){
+	free(aux);
+	return;
+}
 
+int main(int argc,char** argv){
+	TAD_istruct t = init();
+	t = load(t , argc-1 , argv+1);
+	printf("unique: %ld\n\n",unique_articles(t));
+	printf("revisions: %ld\n\n",all_revisions(t));
+	printf("titulo %s\n\n4Query:\n",article_title(25,t));
+	printas(t->LLINK);
+	printf("contribuidor_id: 28903366 %s\n",contributor_name(28903366,t));
+	long* coise = top_20_largest_articles(t);
+	long* fds = top_N_articles_with_more_words(10,t);
+	for(int i = 0; i<10;i++){
+		printf("TOPNContribuidor id: %ld\n",fds[i]);
+	}
+	printf("Artigo: 25| Titulo:%s\n\n",article_title(25,t));
+	for(int i = 0; i<10;i++) printf("TOP20 %ld\n\n",coise[i]);
+	/*char* prefix = "Aut";
+	char** nf = titles_with_prefix(prefix,t);
+	if(nf == NULL) return 0;
+	for(int i = 0; i<2;i++){
+		printf("%s\n",nf[i]);
+	}*/
+	printf("Timestamptas: %s\n",article_timestamp(25,751028090,t));
+	return 1;
 }
